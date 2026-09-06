@@ -416,3 +416,226 @@ body{
 @supports(height:100dvh){
   body,.app{min-height:100dvh}
 }
+
+/* =========================================================
+   v6.12 — REAL IPHONE VIEWPORT FIX
+   ========================================================= */
+
+:root{
+  --app-nav-h: 88px;
+}
+
+html{
+  width:100%;
+  height:100%;
+  min-height:100%;
+  background:#050611;
+  overflow-x:hidden;
+}
+
+body{
+  width:100%;
+  min-height:100dvh;
+  margin:0;
+  overflow-x:hidden;
+  background:#050611;
+  padding:0;
+}
+
+.app{
+  position:relative;
+  width:min(760px,100%);
+  max-width:100%;
+  min-height:100dvh;
+  margin:0 auto;
+  overflow-x:hidden;
+  background:#050611;
+}
+
+main{
+  width:100%;
+  min-height:100dvh;
+  padding:0 0 calc(var(--app-nav-h) + env(safe-area-inset-bottom));
+}
+
+.home-screen{
+  min-height:calc(100dvh - var(--app-nav-h) - env(safe-area-inset-bottom))!important;
+  width:100%;
+  overflow:hidden;
+  background:#050611;
+}
+
+/* The background UI image should occupy the usable screen width,
+   but no longer create a fake tall page based on a hardcoded aspect ratio. */
+.image-skin{
+  position:relative;
+  width:100%;
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  overflow:visible!important;
+  padding:0!important;
+  margin:0!important;
+  background:#050611;
+}
+
+/* Keep the reference artwork proportional, but let it end naturally.
+   The viewport itself is filled by .app / .home-screen. */
+.ui-image{
+  position:relative!important;
+  inset:auto!important;
+  display:block;
+  width:100%!important;
+  height:auto!important;
+  max-width:100%!important;
+  object-fit:contain!important;
+}
+
+/* REAL navigation: viewport fixed, outside the image-skin. */
+.image-bottom-nav{
+  position:fixed!important;
+  z-index:9999!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:0!important;
+  top:auto!important;
+  transform:translateX(-50%)!important;
+
+  width:min(760px,100vw)!important;
+  max-width:100vw!important;
+  height:calc(var(--app-nav-h) + env(safe-area-inset-bottom))!important;
+
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:0!important;
+
+  margin:0!important;
+  padding:0 0 env(safe-area-inset-bottom)!important;
+
+  background:linear-gradient(180deg,#0b0d16 0%,#05070d 100%)!important;
+  border-top:2px solid #2e3548!important;
+  border-bottom:0!important;
+  box-shadow:0 -12px 30px rgba(0,0,0,.72)!important;
+}
+
+.app-nav-button{
+  position:relative!important;
+  width:100%!important;
+  min-width:0!important;
+  height:var(--app-nav-h)!important;
+  min-height:var(--app-nav-h)!important;
+
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+
+  margin:0!important;
+  padding:9px 0 8px!important;
+
+  border:0!important;
+  border-right:1px solid #1d2230!important;
+  border-radius:0!important;
+
+  background:transparent!important;
+  color:#8e9ab4!important;
+
+  overflow:hidden!important;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+.app-nav-button:last-child{
+  border-right:0!important;
+}
+
+.app-nav-button span{
+  display:block!important;
+  font-size:29px!important;
+  line-height:1!important;
+}
+
+.app-nav-button b{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0 1px!important;
+
+  font-size:11px!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+
+.app-nav-button.active{
+  color:#ffe19b!important;
+  background:linear-gradient(180deg,rgba(255,220,118,.07),rgba(255,220,118,0))!important;
+}
+
+.watch-nav em{
+  position:absolute!important;
+  top:8px!important;
+  left:59%!important;
+  min-width:21px!important;
+  height:21px!important;
+  padding:0 5px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:999px!important;
+  background:#d51f42!important;
+  border:2px solid #ff6680!important;
+  color:#fff!important;
+  font:bold 9px/1 ui-monospace,monospace!important;
+}
+
+.watch-nav em.hidden{
+  display:none!important;
+}
+
+/* Sub-pages must also occupy the viewport above the fixed nav. */
+.sub-screen{
+  width:100%!important;
+  max-width:100%!important;
+  min-height:calc(100dvh - var(--app-nav-h) - env(safe-area-inset-bottom))!important;
+  padding-bottom:24px!important;
+  overflow-x:hidden!important;
+}
+
+/* iPhone portrait: increase tap target without horizontal scrolling. */
+@media(max-width:600px){
+  :root{ --app-nav-h: 92px; }
+
+  .app-nav-button span{
+    font-size:28px!important;
+  }
+
+  .app-nav-button b{
+    font-size:10px!important;
+  }
+}
+
+@media(max-width:390px){
+  :root{ --app-nav-h: 88px; }
+
+  .app-nav-button span{
+    font-size:25px!important;
+  }
+
+  .app-nav-button b{
+    font-size:8.5px!important;
+    letter-spacing:-.03em!important;
+  }
+}
+
+/* Prevent any element from widening the viewport. */
+img,canvas,video,svg{
+  max-width:100%;
+}
+
+*{
+  min-width:0;
+}
