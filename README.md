@@ -1,8 +1,14 @@
-# MOVIE v6.14.2 — Stable Spin Fix
+# MOVIE v6.14.3 — Stable SPIN + 1000 Catalog
 
-- v6.14.1 UI/DB/navigation retained
-- Replaced heavy per-frame Canvas/SVG reel redraw with CSS translate3d reel strips
-- SPIN flow: spin -> left/center/right stop -> guaranteed win line -> WIN -> movie result
-- Final symbols remain until next SPIN
-- iPhone safety timeout prevents permanent freeze if transitionend is lost
-- Errors recover to a valid winning result instead of freezing
+v6.14.2 の安定したSPIN処理は変更せず、データ部分だけ修正。
+
+- Netflix 500タイトル
+- Disney+ 500タイトル
+- 合計1000タイトル
+- Huluは検索対象から削除
+- 設定画面を「1000タイトル」に修正
+- サービスごとに存在するカテゴリだけを表示
+- カテゴリ内に存在するジャンルだけを表示
+- 同一条件で直近12作品を避ける抽選を追加
+- Netflix × ハリウッド映画 × 恋愛：50候補を確認
+- SPINのCSSリール処理はv6.14.2のまま維持
