@@ -24,93 +24,122 @@ function updateFilterSummary(){$("#filterSummary").textContent=`現在の条件�
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 
 
+
+/* v6.6 — reference-quality reel renderer.
+   Instead of small hand-drawn primitives, the reel symbols are sampled from the
+   high-detail pixel artwork in movie-ui-reference.jpeg itself. */
+const REEL_SKIN_SRC="movie-ui-reference.jpeg";
+const reelSkin=new Image();
+reelSkin.src=REEL_SKIN_SRC;
+
+/* Crop rectangles in the 919x1536 reference artwork:
+   each crop isolates one of the polished symbols already used by the visual design. */
+const reelCrops={
+  popcorn:[239,228,82,84],
+  camera:[239,318,91,91],
+  clapper:[238,411,94,86],
+  star:[417,228,88,82],
+  seven:[414,318,91,91],
+  ticket:[407,412,105,84],
+  soda:[594,229,76,84],
+  glasses:[575,318,105,83],
+  chair:[591,410,83,91]
+};
+const reelSymbols=Object.keys(reelCrops);
+
 function reelCanvas(el){
   let c=el.querySelector("canvas");
-  if(!c){c=document.createElement("canvas");c.width=184;c.height=420;el.innerHTML="";el.appendChild(c)}
+  if(!c){
+    c=document.createElement("canvas");
+    c.width=240;c.height=540;
+    el.innerHTML="";el.appendChild(c);
+  }
   return c;
 }
-function rect(g,x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
-function outline(g,x,y,w,h,c="#24130d",t=2){
-  rect(g,x,y,w,t,c);rect(g,x,y+h-t,w,t,c);rect(g,x,y,t,h,c);rect(g,x+w-t,y,t,h,c)
+function drawReferenceSymbol(g,type,cx,cy,target=132){
+  const cr=reelCrops[type]||reelCrops.star;
+  const [sx,sy,sw,sh]=cr;
+  const scale=Math.min(target/sw,target/sh);
+  const dw=Math.round(sw*scale),dh=Math.round(sh*scale);
+  g.imageSmoothingEnabled=false;
+
+  // dark pixel outline / drop shadow gives the casino-symbol weight seen in the reference
+  g.globalAlpha=.34;
+  g.drawImage(reelSkin,sx,sy,sw,sh,Math.round(cx-dw/2+6),Math.round(cy-dh/2+7),dw,dh);
+  g.globalAlpha=1;
+  g.drawImage(reelSkin,sx,sy,sw,sh,Math.round(cx-dw/2),Math.round(cy-dh/2),dw,dh);
 }
-function pixelSymbol(g,type,cx,cy,S=1){
-  const X=(x,y,w,h,c)=>rect(g,cx+x*S,cy+y*S,w*S,h*S,c);
-  const dark="#20120f", ink="#11131a", gold="#ffd25a", hi="#fff0a6", red="#df2748", red2="#ff5264",
-        cream="#fff0c5", blue="#3f91d8", cyan="#8bdcf0", brown="#9a5b27", white="#f7ead0";
-  if(type==="seven"){
-    X(-22,-22,44,9,"#0d0b12");X(-20,-20,40,8,"#641126");X(-17,-17,34,7,red);X(8,-10,9,8,red2);X(3,-4,11,8,red);
-    X(-2,3,11,8,red);X(-7,10,11,8,red);X(-12,17,11,7,red2);
-    X(-15,-14,24,4,hi); X(10,-10,4,5,hi);
-  } else if(type==="camera"){
-    X(-24,-9,48,29,"#0a0b10");X(-22,-7,44,25,dark);X(-19,-4,35,19,ink);X(16,-1,12,13,dark);X(19,2,9,8,"#39404c");
-    X(-16,-22,14,14,dark);X(3,-22,14,14,dark);
-    X(-13,-19,8,8,"#495263");X(6,-19,8,8,"#495263");
-    X(-7,1,15,10,"#2d3542");X(-4,4,9,5,"#687486");X(-17,13,31,5,dark);
-  } else if(type==="popcorn"){
-    X(-19,-7,38,33,"#120d0c");X(-17,-5,34,29,dark);X(-14,-2,28,23,cream);
-    for(let i=-12;i<=8;i+=10)X(i,-2,6,23,red);
-    [[-14,-14],[-6,-18],[3,-16],[11,-12],[-1,-10]].forEach(([x,y],i)=>{X(x,y,10,10,i%2?hi:gold);X(x+2,y+2,5,4,cream)});
-  } else if(type==="star"){
-    const pts=[[0,-24],[6,-8],[23,-7],[10,4],[14,21],[0,12],[-14,21],[-10,4],[-23,-7],[-6,-8]];
-    g.fillStyle=dark;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(cx+x*S,cy+y*S):g.moveTo(cx+x*S,cy+y*S));g.closePath();g.fill();
-    g.fillStyle=gold;g.beginPath();pts.map(([x,y])=>[x*.82,y*.82]).forEach(([x,y],i)=>i?g.lineTo(cx+x*S,cy+y*S):g.moveTo(cx+x*S,cy+y*S));g.closePath();g.fill();
-    X(-4,-13,6,8,hi);
-  } else if(type==="ticket"){
-    X(-25,-12,50,27,dark);X(-22,-9,44,21,"#d99239");X(-18,-6,36,15,"#f1b957");
-    X(-12,-2,24,3,brown);X(-8,5,17,3,brown);
-  } else if(type==="soda"){
-    X(-13,-14,27,36,dark);X(-10,-11,21,30,red);X(-7,-8,15,4,red2);X(5,-28,4,17,dark);X(8,-29,11,4,red);
-    X(-8,16,17,4,cream);
-  } else if(type==="glasses"){
-    X(-25,-7,22,17,white);X(3,-7,22,17,white);X(-22,-4,16,11,blue);X(6,-4,16,11,red);
-    X(-3,-2,6,4,dark);X(-28,-9,5,4,dark);X(23,-9,5,4,dark);
-  } else if(type==="clapper"){
-    X(-25,-6,50,32,"#090a0e");X(-23,-4,46,28,dark);X(-20,0,40,22,"#303747");X(-23,-15,46,12,white);
-    for(let i=-20;i<20;i+=12)X(i,-13,7,8,ink);X(-13,6,26,3,white);X(-9,13,18,3,white);
-  } else {
-    X(-18,-10,36,25,dark);X(-14,-7,28,19,"#34405a");X(-22,15,44,5,brown);
-    X(-18,20,5,17,brown);X(13,20,5,17,brown);X(-23,-3,5,22,brown);X(18,-3,5,22,brown);
-  }
-}
-function drawReel(el, symbols){
-  const c=reelCanvas(el),g=c.getContext("2d");g.imageSmoothingEnabled=false;
-  g.setTransform(2,0,0,2,0,0);
-  const W=92,H=210;
+function drawReel(el,symbols){
+  const c=reelCanvas(el),g=c.getContext("2d");
+  const W=c.width,H=c.height;
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+
   const grad=g.createLinearGradient(0,0,W,0);
-  grad.addColorStop(0,"#9c8151");grad.addColorStop(.16,"#ead39a");grad.addColorStop(.5,"#fff0c5");grad.addColorStop(.84,"#dfc48a");grad.addColorStop(1,"#80643e");
+  grad.addColorStop(0,"#8d6a35");grad.addColorStop(.08,"#d6b875");
+  grad.addColorStop(.22,"#f8e5b0");grad.addColorStop(.5,"#fff3c9");
+  grad.addColorStop(.78,"#efd59b");grad.addColorStop(.93,"#bd9554");grad.addColorStop(1,"#765026");
   g.fillStyle=grad;g.fillRect(0,0,W,H);
-  g.fillStyle="#6b4a25";g.fillRect(0,68,W,2);g.fillRect(0,139,W,2);
-  symbols.forEach((sym,i)=>pixelSymbol(g,sym,W/2,35+i*70,1.18));
-  g.fillStyle="#ffffff33";g.fillRect(8,4,4,H-8);
-  g.fillStyle="#3a211333";g.fillRect(W-9,4,5,H-8);g.setTransform(1,0,0,1,0,0);
+
+  // subtle vertical reel shading and separators
+  g.fillStyle="rgba(255,255,255,.28)";g.fillRect(18,8,9,H-16);
+  g.fillStyle="rgba(73,40,17,.18)";g.fillRect(W-26,8,11,H-16);
+  g.fillStyle="#6d4824";g.fillRect(0,178,W,5);g.fillRect(0,357,W,5);
+  g.fillStyle="#d7b56f";g.fillRect(0,183,W,2);g.fillRect(0,362,W,2);
+
+  const centers=[90,270,450];
+  symbols.forEach((sym,i)=>drawReferenceSymbol(g,sym,W/2,centers[i],138));
+
+  // center-line glow to make the winning row feel more like a real slot
+  const glow=g.createLinearGradient(0,205,0,335);
+  glow.addColorStop(0,"rgba(255,214,91,0)");
+  glow.addColorStop(.5,"rgba(255,224,133,.12)");
+  glow.addColorStop(1,"rgba(255,214,91,0)");
+  g.fillStyle=glow;g.fillRect(0,205,W,130);
 }
 function randomStack(){return [rnd(reelSymbols),rnd(reelSymbols),rnd(reelSymbols)]}
+
 function spin(){
   const pool=filtered();
-  if(!pool.length){alert("この条件に合う作品がありません。ジャンル選択で条件を広げてください。");return}
+  if(!pool.length){
+    alert("この条件に合う作品がありません。ジャンル選択で条件を広げてください。");
+    return;
+  }
   $("#dynamicResult").classList.add("hidden");
   $("#spinOverlay").classList.remove("hidden");
   const reels=[$("#mr1"),$("#mr2"),$("#mr3")];
-  reels.forEach(r=>{r.classList.add("spinning");drawReel(r,randomStack())});
-  let n=0;
-  const timer=setInterval(()=>{
-    reels.forEach((r,i)=>{if(n < 18+i*5) drawReel(r,randomStack())});
-    n++;
-    if(n>30){
-      clearInterval(timer);current=rnd(pool);
-      reels.forEach((r,i)=>setTimeout(()=>{
-        r.classList.remove("spinning");
+
+  const begin=()=>{
+    reels.forEach(r=>{r.classList.add("spinning");drawReel(r,randomStack())});
+    let tick=0;
+    const timer=setInterval(()=>{
+      reels.forEach((r,i)=>{
+        const stopAt=26+i*7;
+        if(tick<stopAt) drawReel(r,randomStack());
+      });
+      tick++;
+      if(tick>43){
+        clearInterval(timer);
+        current=rnd(pool);
         const finals=[
           ["popcorn","camera","clapper"],
           ["star","seven","ticket"],
           ["soda","glasses","chair"]
         ];
-        drawReel(r,finals[i]);
-        if(i===2)setTimeout(()=>{$("#spinOverlay").classList.add("hidden");show(current)},420);
-      },i*260));
-    }
-  },72);
+        reels.forEach((r,i)=>setTimeout(()=>{
+          r.classList.remove("spinning");
+          drawReel(r,finals[i]);
+          if(i===2)setTimeout(()=>{
+            $("#spinOverlay").classList.add("hidden");
+            show(current);
+          },500);
+        },i*300));
+      }
+    },62);
+  };
+  if(reelSkin.complete && reelSkin.naturalWidth) begin();
+  else reelSkin.addEventListener("load",begin,{once:true});
 }
+
 function show(m){
   $("#title").textContent=m.title;$("#yearText").textContent=m.year?`(${m.year})`:"";
   $("#tags").innerHTML=[...m.genres,m.category].map(x=>`<span class="tag">${x}</span>`).join("");
@@ -368,14 +397,18 @@ init();
 // v6.2 explicit home buttons on Watch List / History
 $$("[data-go-home]").forEach(b=>b.addEventListener("click",()=>switchTab("home")));
 
-// v6.3: prepare deluxe pixel reels before the first spin.
+// v6.6: prepare the reference-quality reels.
 requestAnimationFrame(()=>{
-  const a=$("#mr1"),b=$("#mr2"),c=$("#mr3");
-  if(a&&b&&c){
-    drawReel(a,["popcorn","camera","clapper"]);
-    drawReel(b,["star","seven","ticket"]);
-    drawReel(c,["soda","glasses","chair"]);
-  }
+  const paint=()=>{
+    const a=$("#mr1"),b=$("#mr2"),c=$("#mr3");
+    if(a&&b&&c){
+      drawReel(a,["popcorn","camera","clapper"]);
+      drawReel(b,["star","seven","ticket"]);
+      drawReel(c,["soda","glasses","chair"]);
+    }
+  };
+  if(reelSkin.complete&&reelSkin.naturalWidth) paint();
+  else reelSkin.addEventListener("load",paint,{once:true});
 });
 
 // v6.5 poster-source map importer.
