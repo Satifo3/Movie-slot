@@ -5,7 +5,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let watched=JSON.parse(localStorage.getItem("movie.v6.watched")||"[]");
 let wish=JSON.parse(localStorage.getItem("movie.v6.wish")||"[]");
 
-const reelSymbols=["🍿","🎥","⭐","7","🎟️","🥤","👓","🎬","🎞️"];
+const reelSymbols=["popcorn","camera","star","seven","ticket","soda","glasses","clapper","chair"];
 
 
 function fill(el,a){el.innerHTML=a.map(x=>`<option value="${x}">${x}</option>`).join("")}
@@ -23,21 +23,91 @@ function filtered(){
 function updateFilterSummary(){$("#filterSummary").textContent=`現在の条件：${$("#category").value} / ${$("#genre").value} / ${$("#service").value} → ${movies.length?filtered().length:0}作品`}
 function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 
+
+function reelCanvas(el){
+  let c=el.querySelector("canvas");
+  if(!c){c=document.createElement("canvas");c.width=92;c.height=210;el.innerHTML="";el.appendChild(c)}
+  return c;
+}
+function rect(g,x,y,w,h,c){g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+function outline(g,x,y,w,h,c="#24130d",t=2){
+  rect(g,x,y,w,t,c);rect(g,x,y+h-t,w,t,c);rect(g,x,y,t,h,c);rect(g,x+w-t,y,t,h,c)
+}
+function pixelSymbol(g,type,cx,cy,S=1){
+  const X=(x,y,w,h,c)=>rect(g,cx+x*S,cy+y*S,w*S,h*S,c);
+  const dark="#20120f", ink="#11131a", gold="#ffd25a", hi="#fff0a6", red="#df2748", red2="#ff5264",
+        cream="#fff0c5", blue="#3f91d8", cyan="#8bdcf0", brown="#9a5b27", white="#f7ead0";
+  if(type==="seven"){
+    X(-20,-20,40,8,dark);X(-17,-17,34,7,red);X(8,-10,9,8,red2);X(3,-4,11,8,red);
+    X(-2,3,11,8,red);X(-7,10,11,8,red);X(-12,17,11,7,red2);
+    X(-15,-14,24,4,hi); X(10,-10,4,5,hi);
+  } else if(type==="camera"){
+    X(-22,-7,44,25,dark);X(-19,-4,35,19,ink);X(16,-1,12,13,dark);X(19,2,9,8,"#39404c");
+    X(-16,-22,14,14,dark);X(3,-22,14,14,dark);
+    X(-13,-19,8,8,"#495263");X(6,-19,8,8,"#495263");
+    X(-7,1,15,10,"#2d3542");X(-4,4,9,5,"#687486");X(-17,13,31,5,dark);
+  } else if(type==="popcorn"){
+    X(-17,-5,34,29,dark);X(-14,-2,28,23,cream);
+    for(let i=-12;i<=8;i+=10)X(i,-2,6,23,red);
+    [[-14,-14],[-6,-18],[3,-16],[11,-12],[-1,-10]].forEach(([x,y],i)=>{X(x,y,10,10,i%2?hi:gold);X(x+2,y+2,5,4,cream)});
+  } else if(type==="star"){
+    const pts=[[0,-24],[6,-8],[23,-7],[10,4],[14,21],[0,12],[-14,21],[-10,4],[-23,-7],[-6,-8]];
+    g.fillStyle=dark;g.beginPath();pts.forEach(([x,y],i)=>i?g.lineTo(cx+x*S,cy+y*S):g.moveTo(cx+x*S,cy+y*S));g.closePath();g.fill();
+    g.fillStyle=gold;g.beginPath();pts.map(([x,y])=>[x*.82,y*.82]).forEach(([x,y],i)=>i?g.lineTo(cx+x*S,cy+y*S):g.moveTo(cx+x*S,cy+y*S));g.closePath();g.fill();
+    X(-4,-13,6,8,hi);
+  } else if(type==="ticket"){
+    X(-25,-12,50,27,dark);X(-22,-9,44,21,"#d99239");X(-18,-6,36,15,"#f1b957");
+    X(-12,-2,24,3,brown);X(-8,5,17,3,brown);
+  } else if(type==="soda"){
+    X(-13,-14,27,36,dark);X(-10,-11,21,30,red);X(-7,-8,15,4,red2);X(5,-28,4,17,dark);X(8,-29,11,4,red);
+    X(-8,16,17,4,cream);
+  } else if(type==="glasses"){
+    X(-25,-7,22,17,white);X(3,-7,22,17,white);X(-22,-4,16,11,blue);X(6,-4,16,11,red);
+    X(-3,-2,6,4,dark);X(-28,-9,5,4,dark);X(23,-9,5,4,dark);
+  } else if(type==="clapper"){
+    X(-23,-4,46,28,dark);X(-20,0,40,22,"#303747");X(-23,-15,46,12,white);
+    for(let i=-20;i<20;i+=12)X(i,-13,7,8,ink);X(-13,6,26,3,white);X(-9,13,18,3,white);
+  } else {
+    X(-18,-10,36,25,dark);X(-14,-7,28,19,"#34405a");X(-22,15,44,5,brown);
+    X(-18,20,5,17,brown);X(13,20,5,17,brown);X(-23,-3,5,22,brown);X(18,-3,5,22,brown);
+  }
+}
+function drawReel(el, symbols){
+  const c=reelCanvas(el),g=c.getContext("2d");g.imageSmoothingEnabled=false;
+  const grad=g.createLinearGradient(0,0,c.width,0);
+  grad.addColorStop(0,"#9c8151");grad.addColorStop(.16,"#ead39a");grad.addColorStop(.5,"#fff0c5");grad.addColorStop(.84,"#dfc48a");grad.addColorStop(1,"#80643e");
+  g.fillStyle=grad;g.fillRect(0,0,c.width,c.height);
+  g.fillStyle="#6b4a25";g.fillRect(0,68,c.width,2);g.fillRect(0,139,c.width,2);
+  symbols.forEach((sym,i)=>pixelSymbol(g,sym,c.width/2,35+i*70,.78));
+  g.fillStyle="#ffffff33";g.fillRect(8,4,4,c.height-8);
+  g.fillStyle="#3a211333";g.fillRect(c.width-9,4,5,c.height-8);
+}
+function randomStack(){return [rnd(reelSymbols),rnd(reelSymbols),rnd(reelSymbols)]}
 function spin(){
   const pool=filtered();
   if(!pool.length){alert("この条件に合う作品がありません。ジャンル選択で条件を広げてください。");return}
   $("#dynamicResult").classList.add("hidden");
   $("#spinOverlay").classList.remove("hidden");
   const reels=[$("#mr1"),$("#mr2"),$("#mr3")];
+  reels.forEach(r=>{r.classList.add("spinning");drawReel(r,randomStack())});
   let n=0;
-  reels.forEach(r=>r.classList.add("spinning"));
   const timer=setInterval(()=>{
-    reels.forEach(r=>r.textContent=rnd(reelSymbols));
-    if(++n>23){
+    reels.forEach((r,i)=>{if(n < 18+i*5) drawReel(r,randomStack())});
+    n++;
+    if(n>30){
       clearInterval(timer);current=rnd(pool);
-      reels.forEach((r,i)=>setTimeout(()=>{r.classList.remove("spinning");r.textContent=rnd(reelSymbols);if(i===2)setTimeout(()=>{$("#spinOverlay").classList.add("hidden");show(current)},180)},120+i*220));
+      reels.forEach((r,i)=>setTimeout(()=>{
+        r.classList.remove("spinning");
+        const finals=[
+          ["popcorn","camera","clapper"],
+          ["star","seven","ticket"],
+          ["soda","glasses","chair"]
+        ];
+        drawReel(r,finals[i]);
+        if(i===2)setTimeout(()=>{$("#spinOverlay").classList.add("hidden");show(current)},420);
+      },i*260));
     }
-  },65);
+  },72);
 }
 function show(m){
   $("#title").textContent=m.title;$("#yearText").textContent=m.year?`(${m.year})`:"";
@@ -208,3 +278,13 @@ init();
 
 // v6.2 explicit home buttons on Watch List / History
 $$("[data-go-home]").forEach(b=>b.addEventListener("click",()=>switchTab("home")));
+
+// v6.3: prepare deluxe pixel reels before the first spin.
+requestAnimationFrame(()=>{
+  const a=$("#mr1"),b=$("#mr2"),c=$("#mr3");
+  if(a&&b&&c){
+    drawReel(a,["popcorn","camera","clapper"]);
+    drawReel(b,["star","seven","ticket"]);
+    drawReel(c,["soda","glasses","chair"]);
+  }
+});
