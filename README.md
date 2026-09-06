@@ -1,9 +1,10 @@
-# MOVIE v6.14.4 — Japanese Title Display
+# MOVIE v6.14.5 — App Icon Integrated
 
-- Netflix 500 + Disney+ 500 = 1000作品DBを維持
-- DBには原題 titleOriginal を保持
-- 既に日本語タイトルの作品はそのまま使用
-- 英題しかない作品は日本語Wikipedia APIで日本語ページ名を取得
-- 結果カード / 観たいリスト / 視聴履歴 / 評価画面で日本語タイトル優先表示
-- 日本語ページ名を取得できない場合だけ原題へフォールバック
-- SPIN処理はv6.14.3の安定版を維持
+変更内容:
+- 新しい正方形MOVIE ROULETTEアイコンを正式アプリアイコンとして組み込み
+- iPhoneホーム画面用 `apple-touch-icon.png` (180x180)
+- PWA用 `icon-192.png` / `icon-512.png`
+- ブラウザ用 `favicon-32.png`
+- `manifest.webmanifest` 追加
+- iPhoneで「ホーム画面に追加」した際にMOVIEアイコンを使用
+- v6.14.4の1000作品DB / 日本語タイトル / SPIN / ナビ等は変更なし
