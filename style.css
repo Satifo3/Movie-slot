@@ -79,3 +79,13 @@ button{cursor:pointer}
   .result-actions{gap:1%}.action{border-width:2px}
   .quote-row{border-width:2px}.speech{border-width:1px}
 }
+
+/* v6.2 explicit return navigation */
+.back-home{
+  width:100%;margin:14px 0 4px;padding:13px 16px;
+  border:2px solid #c9973e;border-radius:7px;
+  background:linear-gradient(#2b1720,#160d13);
+  color:#ffe0a0;font-weight:900;letter-spacing:.04em;
+  box-shadow:inset 0 0 0 2px #09070b,0 4px 14px #0008;
+}
+.back-home:active{transform:translateY(1px);filter:brightness(1.15)}

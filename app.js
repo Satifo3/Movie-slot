@@ -71,33 +71,119 @@ function flavorText(m){
 }
 
 /* richer poster canvas */
+
+/* v6.2 — 300-title deterministic pixel-poster renderer.
+   Every title gets a stable composition generated from its own title/id/year/category/genres.
+   It does not reuse one generic city silhouette. */
+function hash32(s){
+  let h=2166136261>>>0;
+  for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}
+  return h>>>0;
+}
+function rng(seed){return function(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}}
+function px(ctx,x,y,w,h,c){ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+function linePx(ctx,x0,y0,x1,y1,c,w=1){
+  ctx.strokeStyle=c;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(Math.round(x0)+.5,Math.round(y0)+.5);ctx.lineTo(Math.round(x1)+.5,Math.round(y1)+.5);ctx.stroke()
+}
+function paletteFor(m,r){
+  const gs=m.genres.join("/");
+  if(gs.includes("ホラー"))return ["#080a12","#1d1830","#6b2037","#e9c26a","#d7e6df","#a33445"];
+  if(gs.includes("恋愛"))return ["#18243b","#a94f67","#f0a07b","#ffd6a5","#4b1f38","#f4e8cf"];
+  if(gs.includes("SF"))return ["#071426","#123a5a","#1f7590","#71d4d7","#f0c95b","#e8eef0"];
+  if(gs.includes("アクション")||gs.includes("カー"))return ["#10172b","#263a5a","#c33c35","#f08b3d","#f2cf67","#dce8ef"];
+  if(gs.includes("ファンタジー"))return ["#101a2e","#263e55","#5b4777","#e6b94e","#83bfa8","#e9dfc6"];
+  if(gs.includes("コメディ"))return ["#192944","#35658b","#e5a742","#e06b4f","#f1dc8b","#f5eee0"];
+  if(m.category==="アニメ映画")return ["#172b45","#356b86","#d85b62","#efad58","#f4db8e","#f2eee0"];
+  return ["#111a28","#2d4052","#774351","#c8764e","#d8b96d","#ece2c8"];
+}
+function drawSky(ctx,p,r){
+  px(ctx,0,0,120,176,p[0]);px(ctx,0,38,120,70,p[1]);px(ctx,0,78,120,98,p[2]);
+  for(let i=0;i<34;i++){let x=Math.floor(r()*118),y=4+Math.floor(r()*74),s=r()>.82?2:1;px(ctx,x,y,s,s,r()>.25?p[3]:p[5])}
+}
+function drawCity(ctx,p,r,horizon=124){
+  for(let x=-3;x<123;){
+    let w=5+Math.floor(r()*11),h=12+Math.floor(r()*47);
+    px(ctx,x,horizon-h,w,h,p[0]);
+    if(r()>.4)for(let yy=horizon-h+5;yy<horizon-4;yy+=7)if(r()>.45)px(ctx,x+2,yy,1,2,p[3]);
+    x+=w+1;
+  }
+}
+function drawRoad(ctx,p,r){
+  px(ctx,0,120,120,56,"#11131b");px(ctx,55,120,10,56,"#222632");
+  for(let y=127;y<176;y+=15)px(ctx,59,y,2,8,p[3]);
+  linePx(ctx,0,176,46,120,p[4],2);linePx(ctx,119,176,74,120,p[4],2)
+}
+function drawCar2(ctx,x,y,scale,body,glass){
+  px(ctx,x,y,40*scale,9*scale,body);px(ctx,x+8*scale,y-8*scale,24*scale,9*scale,body);
+  px(ctx,x+11*scale,y-6*scale,8*scale,4*scale,glass);px(ctx,x+21*scale,y-6*scale,8*scale,4*scale,glass);
+  px(ctx,x+5*scale,y+7*scale,8*scale,6*scale,"#08090c");px(ctx,x+27*scale,y+7*scale,8*scale,6*scale,"#08090c");
+  px(ctx,x+2*scale,y+2*scale,3*scale,3*scale,"#ffe59b");px(ctx,x+35*scale,y+2*scale,3*scale,3*scale,"#ff7059");
+}
+function drawFigures(ctx,p,r,count=2){
+  for(let i=0;i<count;i++){
+    let x=27+i*(66/(Math.max(1,count-1)))+Math.floor(r()*5-2), y=110+Math.floor(r()*8);
+    px(ctx,x,y-27,8,8,p[5]);px(ctx,x+1,y-19,6,19,p[0]);px(ctx,x-3,y-15,4,15,p[0]);px(ctx,x+7,y-15,4,15,p[0]);
+    px(ctx,x+1,y,2,19,p[0]);px(ctx,x+5,y,2,19,p[0]);
+  }
+}
+function drawShip(ctx,p,r){
+  px(ctx,8,119,104,9,p[5]);px(ctx,22,108,73,12,p[4]);px(ctx,33,99,51,10,p[5]);
+  for(let i=0;i<4;i++){px(ctx,37+i*13,88,5,12,p[0]);px(ctx,38+i*13,86,3,3,p[3])}
+  px(ctx,14,128,93,4,p[0]);
+}
+function drawCastle(ctx,p,r){
+  px(ctx,22,91,76,42,p[0]);
+  for(let i=0;i<5;i++){let x=27+i*14,h=22+(i%2)*13;px(ctx,x,91-h,9,h,p[0]);px(ctx,x+2,91-h-6,5,6,p[0]);px(ctx,x+3,91-h+5,2,4,p[3])}
+  px(ctx,55,72,10,61,p[0]);px(ctx,58,82,3,5,p[3]);
+}
+function drawSpace(ctx,p,r){
+  let cx=60,cy=87;px(ctx,cx-4,cy-31,8,44,p[5]);px(ctx,cx-13,cy-16,26,7,p[5]);px(ctx,cx-8,cy+10,16,17,p[4]);
+  px(ctx,cx-3,cy-37,6,8,p[3]);for(let i=0;i<5;i++)px(ctx,cx-2+i,cy+27+i*4,4-i%2,5,p[3]);
+}
+function drawMonster(ctx,p,r){
+  px(ctx,39,73,42,51,p[0]);px(ctx,31,87,12,31,p[0]);px(ctx,77,84,13,34,p[0]);
+  px(ctx,45,65,8,10,p[0]);px(ctx,68,65,8,10,p[0]);px(ctx,50,84,4,3,p[3]);px(ctx,68,84,4,3,p[3]);
+  for(let i=0;i<5;i++)px(ctx,43+i*8,118+i%2*5,5,17,p[0]);
+}
+function drawMystery(ctx,p,r){
+  drawCity(ctx,p,r,128);px(ctx,50,73,20,46,p[0]);px(ctx,45,76,30,4,p[0]);px(ctx,52,64,16,12,p[0]);
+  px(ctx,57,82,3,3,p[3]);px(ctx,64,82,3,3,p[3]);
+}
+function drawTitleBlock(ctx,m,p){
+  // Original title treatment: deliberately not reproducing official poster typography/logos.
+  px(ctx,7,7,106,30,"#080a12");ctx.strokeStyle=p[3];ctx.lineWidth=1;ctx.strokeRect(8.5,8.5,103,27);
+  ctx.textAlign="center";ctx.fillStyle=p[5];ctx.font="bold 7px monospace";
+  let s=m.title, lines=[];
+  while(s.length){lines.push(s.slice(0,15));s=s.slice(15);if(lines.length===2)break}
+  ctx.fillText(lines[0]||"",60,20);if(lines[1])ctx.fillText(lines[1],60,29);
+  ctx.fillStyle=p[3];ctx.font="bold 4px monospace";ctx.fillText(`${m.year||""}  ${m.genres[0]||""}`,60,34);
+}
 function drawPoster(m){
   const host=$("#pixelPoster");host.innerHTML="";
   const c=document.createElement("canvas");c.width=120;c.height=176;host.appendChild(c);
-  const x=c.getContext("2d");x.imageSmoothingEnabled=false;
-  const kind=(m.poster&&m.poster.kind)||"drama";
-  const pals={car:["#162743","#ef6a2f","#151824","#ffd45c","#4cb1e5"],space:["#111630","#49316d","#141525","#8de3ff","#f2d36c"],horror:["#120a13","#56162b","#07070b","#d84a5d","#d5b36c"],romance:["#401a31","#e67579","#271421","#ffd6a7","#ff9eb4"],fantasy:["#172640","#674282","#14202b","#ffd460","#8bd8e7"],history:["#584934","#b26c3a","#2c2419","#e8c878","#a63b2c"],monster:["#152331","#702e30","#11151c","#f0cf58","#62c48b"],hero:["#112945","#a52335","#151923","#ffd75d","#54b7e8"],drama:["#1a2a42","#8b4656","#13151c","#e6c16a","#8bb7d1"]};
-  const p=pals[kind]||pals.drama;
-  x.fillStyle=p[0];x.fillRect(0,0,120,176);x.fillStyle=p[1];x.fillRect(0,62,120,114);x.fillStyle=p[2];x.fillRect(0,112,120,64);
-  x.fillStyle=p[3];for(let i=0;i<26;i++)x.fillRect((i*23+m.id*7)%116,8+((i*17+m.id)%48),1+(i%2),1+(i%2));
-  x.fillStyle=p[2];for(let i=0;i<18;i++){let bx=i*7-2,h=12+((i*13+m.id)%37);x.fillRect(bx,111-h,4+(i%3),h)}
-  drawMotif(x,m,p);
-  x.fillStyle="#080912e8";x.fillRect(8,8,104,28);x.strokeStyle=p[3];x.strokeRect(9,9,102,26);x.textAlign="center";x.fillStyle="#fff0c7";x.font="bold 7px monospace";
-  const lines=m.title.length>15?[m.title.slice(0,15),m.title.slice(15,30)]:[m.title];
-  x.fillText(lines[0],60,20);if(lines[1])x.fillText(lines[1],60,29);x.fillStyle=p[3];x.font="bold 4px monospace";x.fillText(m.genres[0],60,34);
-  x.fillStyle="#07070a";for(let yy=5;yy<171;yy+=10){x.fillRect(1,yy,3,5);x.fillRect(116,yy,3,5)}
+  const ctx=c.getContext("2d");ctx.imageSmoothingEnabled=false;
+  const seed=hash32(`${m.id}|${m.title}|${m.year}|${m.category}|${m.genres.join(",")}`), r=rng(seed), p=paletteFor(m,r);
+  drawSky(ctx,p,r);
+  const g=m.genres.join("/");
+  const t=m.title;
+  // Subject language is selected per title/genre, then seed changes composition/details for all 300.
+  if(t.includes("タイタニック")){drawShip(ctx,p,r)}
+  else if(t.includes("ハリー・ポッター")){drawCastle(ctx,p,r)}
+  else if(g.includes("カー")){drawCity(ctx,p,r,118);drawRoad(ctx,p,r);drawCar2(ctx,12,139,.95,p[3],p[4]);drawCar2(ctx,67,145,.88,p[5],p[4])}
+  else if(g.includes("怪獣")){drawCity(ctx,p,r,132);drawMonster(ctx,p,r)}
+  else if(g.includes("SF")){drawSpace(ctx,p,r);if(r()>.45)drawCity(ctx,p,r,139)}
+  else if(g.includes("ファンタジー")){drawCastle(ctx,p,r)}
+  else if(g.includes("恋愛")){drawCity(ctx,p,r,132);drawFigures(ctx,p,r,2)}
+  else if(g.includes("ミステリー")||g.includes("犯罪")){drawMystery(ctx,p,r)}
+  else if(g.includes("アクション")){drawCity(ctx,p,r,127);drawFigures(ctx,p,r,1);for(let i=0;i<5;i++)px(ctx,14+i*21,126+Math.floor(r()*22),3,3,p[3])}
+  else if(g.includes("ホラー")){drawFigures(ctx,p,r,1);for(let i=0;i<7;i++)linePx(ctx,12+i*16,72,5+i*17,138,p[5],1)}
+  else {drawCity(ctx,p,r,130);drawFigures(ctx,p,r,1+(seed%3))}
+  // Per-title decorative fingerprint: makes even same-genre posters visibly different.
+  for(let i=0;i<8;i++){let x=8+Math.floor(r()*104),y=45+Math.floor(r()*92);if(r()>.5)px(ctx,x,y,1+seed%2,3,p[4])}
+  drawTitleBlock(ctx,m,p);
+  px(ctx,0,0,5,176,"#08090d");px(ctx,115,0,5,176,"#08090d");
+  for(let y=5;y<173;y+=10){px(ctx,1,y,3,5,p[2]);px(ctx,116,y,3,5,p[2])}
 }
-function drawMotif(x,m,p){
-  const t=m.title,g=m.genres,d=p[2],hi=p[3],cool=p[4];
-  if(t.includes("ワイルド・スピード")||g.includes("カー")){car(x,15,116,43,hi,cool);car(x,61,122,43,"#d8dce1","#dd4a52");return}
-  if(t.includes("タイタニック")){x.fillStyle="#e3d6b3";x.fillRect(10,118,100,9);x.fillRect(25,104,69,15);x.fillStyle="#11131a";[33,48,63,78].forEach(v=>x.fillRect(v,91,4,15));return}
-  if(t.includes("ハリー・ポッター")){x.fillStyle="#11131a";x.fillRect(24,100,72,26);[29,41,55,70,84].forEach((v,i)=>x.fillRect(v,75-i%2*7,8,27+i%2*7));x.fillStyle=hi;x.fillRect(72,52,2,19);return}
-  if(g.includes("怪獣")){x.fillStyle="#101419";x.fillRect(39,76,43,54);x.fillRect(27,91,18,34);x.fillRect(78,88,17,37);return}
-  if(g.includes("SF")){x.fillStyle="#dde8ed";x.fillRect(52,77,16,35);x.fillRect(45,88,30,8);x.fillStyle=hi;x.fillRect(58,112,4,18);return}
-  if(g.includes("恋愛")){x.fillStyle="#15131a";x.fillRect(35,94,13,35);x.fillRect(72,94,13,35);x.fillStyle=hi;x.fillRect(51,77,8,8);x.fillRect(61,77,8,8);x.fillRect(55,84,10,10);return}
-  x.fillStyle="#15131a";x.fillRect(27,101,20,31);x.fillRect(74,98,20,34);x.fillStyle=hi;x.fillRect(50,89,20,4);
-}
-function car(x,x0,y0,w,body,glass){x.fillStyle=body;x.fillRect(x0,y0,w,11);x.fillRect(x0+10,y0-9,w-20,10);x.fillStyle=glass;x.fillRect(x0+14,y0-7,10,5);x.fillRect(x0+w-24,y0-7,10,5);x.fillStyle="#07080b";x.fillRect(x0+6,y0+8,10,8);x.fillRect(x0+w-16,y0+8,10,8)}
 
 function saveAll(){localStorage.setItem("movie.v6.watched",JSON.stringify(watched));localStorage.setItem("movie.v6.wish",JSON.stringify(wish));render()}
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -119,3 +205,6 @@ $("#clearData").onclick=()=>{if(confirm("視聴履歴と観たいリストをす
 
 // v6.1: embedded database startup — no fetch/CORS dependency
 init();
+
+// v6.2 explicit home buttons on Watch List / History
+$$("[data-go-home]").forEach(b=>b.addEventListener("click",()=>switchTab("home")));
