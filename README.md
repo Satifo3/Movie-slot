@@ -1,12 +1,10 @@
-# MOVIE v6.16 — Netflix + Disney+ 1000 Catalog
+# MOVIE v6.17 — UI Restore
 
-- Huluを完全撤去
-- Netflix 500作品
-- Disney+ 500作品
-- 合計1000作品
-- Netflix / Disney+ の2サービスだけを検索対象に限定
-- サービス → カテゴリ → ジャンルの順で選択肢を実データから再構成
-- 0件になるジャンルは選択肢に出さない
-- 万一状態が古くても、SPIN時にジャンル→カテゴリの順で自動的に条件を広げて必ず候補を返す
-- 日本語Wikipedia APIによる作品要約表示を維持
-- 2026-09-07カタログ基準
+修正:
+- v6.16で壊れていたUI画像参照を修正
+- UI画像を `movie-ui-v617.jpeg` に統一
+- CSS/JSも `style-v617.css` / `app-v617.js` に統一
+- Safari/GitHub Pagesの古いキャッシュを避けるため `?v=617` を付与
+- UI画像読み込み失敗時の再試行ガードを追加
+- スロットUI、作品カード、背景、固定ナビを復元
+- Netflix 500 / Disney+ 500 = 合計1000作品DBは維持
