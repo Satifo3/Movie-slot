@@ -1,18 +1,18 @@
-# MOVIE v4 — Reference UI rebuild
+# MOVIE v5 Pixel Cinema
 
-画像2の雰囲気を、画像素材を背景として使わず HTML / CSS / JS だけで再構築した版。
+画像2の構成を目標に、ホーム画面をHTML/CSS/JSのみで全面再構築した版です。
 
-## v4
-- 大型 MOVIE / ROULETTE 看板
-- 赤カーテン、映画館座席、電球マーキー
-- 3段シンボルのスロットリール
-- 映画アイコン中心のゲーム的スピン演出
-- 横長レイアウトの結果カード
-- 作品別Canvasピクセルポスター
-- 3列アクションボタン
-- キャラクター風ミニマスコットをCSSのみで構成
-- 下部5ボタンナビ
-- 300タイトルDBとカテゴリ/ジャンルAND検索は維持
-- GitHub Pages対応
+## v5 主な変更
+- ホーム画面からカテゴリ/ジャンル/配信のプルダウンを撤去
+- 下部「ジャンル選択」タブにフィルターを移動
+- MOVIE / ROULETTE 大型看板
+- 赤カーテン、左右の映画小物、観客席
+- 絵文字依存をやめ、スロット記号を低解像度Canvasピクセル絵化
+- 3リール高速→中速→低速→順番停止
+- 結果カードを参考画像に近い横長構成へ
+- Netflix / Disney+ / Huluをロゴ風カードで表示
+- 作品ポスターを120×176の低解像度Canvasで再設計
+- 有名作品はタイトルごとの専用構図を追加
+- 300タイトルDBとAND条件抽選は維持
 
-GitHub PagesではZIP内の index.html / style.css / app.js / movies.json をリポジトリ直下へ置いてください。
+GitHub Pagesでは index.html / style.css / app.js / movies.json をリポジトリ直下に置いてください。

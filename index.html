@@ -3,114 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#070711">
-<title>MOVIE v4</title>
+<meta name="theme-color" content="#050611">
+<title>MOVIE v5 Pixel Cinema</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="scanlines"></div>
-
 <div class="app">
+
   <main>
     <section id="home" class="screen active">
-      <div class="theater-shell">
+      <div class="cinema">
 
-        <div class="side-copy left-copy">ACTION<br>DRAMA<br>SF<br>COMEDY<br>HORROR<br>AND MORE...</div>
-        <div class="side-copy right-copy">GOOD<br>MOVIES<br>GOOD<br>DAYS.</div>
+        <div class="curtain curtain-left"></div>
+        <div class="curtain curtain-right"></div>
 
-        <div class="curtain curtain-l"></div>
-        <div class="curtain curtain-r"></div>
+        <div class="side-words left-words">ACTION<br>DRAMA<br>SF<br>COMEDY<br>HORROR<br>AND MORE...</div>
+        <div class="side-words right-words">GOOD<br>MOVIES<br>GOOD<br>DAYS.</div>
 
-        <header class="movie-sign">
-          <div class="sign-bulbs"></div>
-          <div class="movie-logo"><span>M</span><i class="reel-logo">◉</i><span>VIE</span></div>
-          <div class="roulette-word">◆ ROULETTE ◆</div>
-          <div class="sign-bulbs bottom"></div>
+        <header class="logo-sign">
+          <div class="lamp-line"></div>
+          <div class="logo-row">
+            <span class="logo-letter">M</span>
+            <canvas id="logoReel" width="26" height="26"></canvas>
+            <span class="logo-letter">VIE</span>
+          </div>
+          <div class="roulette-label">◆ ROULETTE ◆</div>
         </header>
 
-        <section id="filterArea" class="filter-panel">
-          <label>カテゴリ<select id="category"></select></label>
-          <label>ジャンル<select id="genre"></select></label>
-          <label>配信<select id="service"></select></label>
-        </section>
+        <div class="left-prop popcorn-prop"><canvas id="propPopcorn" width="28" height="36"></canvas></div>
+        <div class="right-prop clapper-prop"><canvas id="propClapper" width="34" height="34"></canvas><span>LIFE<br>IS A<br>MOVIE.</span></div>
 
-        <div class="cinema-decoration popcorn-left">🍿</div>
-        <div class="cinema-decoration clap-right">🎬</div>
+        <section class="slot-machine">
+          <div class="slot-lamps"></div>
 
-        <section class="slot-cabinet">
-          <div class="marquee-lamps"></div>
+          <div class="reels-wrap">
+            <button class="side-arrow left" type="button">▶</button>
 
-          <div class="reel-frame">
-            <button class="arrow left-arrow" type="button">▶</button>
+            <div class="reel" id="r1"><canvas class="reel-canvas" width="72" height="168"></canvas></div>
+            <div class="reel" id="r2"><canvas class="reel-canvas" width="72" height="168"></canvas></div>
+            <div class="reel" id="r3"><canvas class="reel-canvas" width="72" height="168"></canvas></div>
 
-            <div class="reel" id="r1">
-              <div class="reel-stack">
-                <div class="symbol">🍿</div>
-                <div class="symbol main">🎥</div>
-                <div class="symbol">🎬</div>
-              </div>
-            </div>
-            <div class="reel" id="r2">
-              <div class="reel-stack">
-                <div class="symbol">⭐</div>
-                <div class="symbol main">7</div>
-                <div class="symbol">🎟️</div>
-              </div>
-            </div>
-            <div class="reel" id="r3">
-              <div class="reel-stack">
-                <div class="symbol">🥤</div>
-                <div class="symbol main">👓</div>
-                <div class="symbol">🎞️</div>
-              </div>
-            </div>
-
-            <button class="arrow right-arrow" type="button">◀</button>
+            <button class="side-arrow right" type="button">◀</button>
           </div>
 
           <button id="spin" class="spin-btn">SPIN!</button>
-          <div class="cabinet-note">SELECT → SPIN → WATCH</div>
         </section>
 
-        <div class="mascot mascot-left"><div class="hair"></div><div class="glasses"><i></i><i></i></div><div class="popcorn-mini">🍿</div></div>
-        <div class="mascot mascot-right cat"><div class="ears"></div><div class="glasses"><i></i><i></i></div><div class="popcorn-mini">🍿</div></div>
+        <div class="mascot human">
+          <div class="head"><div class="hair"></div><div class="pixel-glasses blue-red"></div></div>
+          <canvas id="mascotPop1" width="22" height="24"></canvas>
+        </div>
+        <div class="mascot cat">
+          <div class="cat-head"><div class="cat-ears"></div><div class="pixel-glasses blue-red"></div></div>
+          <canvas id="mascotPop2" width="22" height="24"></canvas>
+        </div>
 
-        <div class="catchline">🎬 今日の一本が、きっと見つかる 🎬</div>
+        <div class="catch-copy">🎬 今日の一本が、きっと見つかる 🎬</div>
 
         <article id="result" class="result-card hidden">
-          <div class="film-holes top-holes"></div>
+          <div class="film-perf top"></div>
 
-          <div class="result-grid">
-            <div id="pixelPoster" class="pixel-poster"></div>
+          <div class="result-layout">
+            <div id="pixelPoster" class="poster"></div>
 
-            <div class="movie-info">
-              <div class="title-row">
-                <div>
-                  <h2 id="title"></h2>
-                  <div id="yearText" class="year"></div>
-                </div>
-                <span id="categoryTag" class="category-pill"></span>
-              </div>
+            <div class="info">
+              <h2 id="title"></h2>
+              <div id="yearText" class="year"></div>
 
               <div id="tags" class="tags"></div>
+
               <p id="hook" class="synopsis"></p>
+
               <div id="services" class="services"></div>
             </div>
           </div>
 
           <div class="result-actions">
-            <button id="watched" class="btn watched">✓ 観た・評価</button>
-            <button id="wish" class="btn wish">☆ 観たい</button>
-            <button id="again" class="btn again">↻ もう一度</button>
+            <button id="watched" class="action watched">✓ 観た・評価</button>
+            <button id="wish" class="action wish">☆ 観たい</button>
+            <button id="again" class="action again">↻ もう一度</button>
           </div>
 
-          <div class="quote-box">
-            <div class="mini-avatar"><span>👓</span></div>
+          <div class="quote-row">
+            <div class="quote-avatar"><div class="tiny-face"><div class="tiny-hair"></div><div class="pixel-glasses blue-red"></div></div></div>
             <div id="flavor" class="speech">映画は、選ぶ時間からもう始まってる。</div>
-            <div class="life-copy">MOVIE<br>LIFE<br>BETTER</div>
+            <div class="life">MOVIE<br>LIFE<br>BETTER</div>
           </div>
 
-          <div class="film-holes bottom-holes"></div>
+          <div class="film-perf bottom"></div>
         </article>
 
         <div class="seat-row">
@@ -119,21 +100,32 @@
       </div>
     </section>
 
+    <section id="genres" class="screen sub-screen">
+      <div class="sub-title"><span>☷</span><h2>ジャンル選択</h2></div>
+      <div class="filter-card">
+        <label>カテゴリ<select id="category"></select></label>
+        <label>ジャンル<select id="genre"></select></label>
+        <label>配信<select id="service"></select></label>
+        <div class="filter-summary" id="filterSummary"></div>
+        <button id="applyFilters" class="apply-btn">この条件で映画を選ぶ</button>
+      </div>
+    </section>
+
     <section id="watch" class="screen sub-screen">
-      <div class="sub-header"><h2>☆ 観たいリスト</h2><span id="wishCount">0</span></div>
+      <div class="sub-title"><span>♡</span><h2>観たいリスト</h2><b id="wishCount">0</b></div>
       <div id="watchList"></div>
     </section>
 
     <section id="history" class="screen sub-screen">
-      <div class="sub-header"><h2>▤ 視聴履歴</h2><span id="watchedCount">0</span></div>
+      <div class="sub-title"><span>▣</span><h2>視聴履歴</h2><b id="watchedCount">0</b></div>
       <div id="historyList"></div>
     </section>
 
     <section id="settings" class="screen sub-screen">
-      <div class="sub-header"><h2>⚙ 設定</h2></div>
+      <div class="sub-title"><span>⚙</span><h2>設定</h2></div>
       <div class="settings-card">
-        <p>映画データ：<b>300タイトル</b></p>
-        <p>視聴記録と観たいリストはこの端末のブラウザ内に保存されます。</p>
+        <p>映画データ：<strong>300タイトル</strong></p>
+        <p>視聴記録と観たいリストはブラウザ内に保存されます。</p>
         <button id="clearData" class="danger">記録データをすべて削除</button>
       </div>
     </section>
@@ -141,7 +133,7 @@
 
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="home"><span>⌂</span><b>ホーム</b></button>
-    <button class="nav-btn" id="genreNav" data-tab="home"><span>☷</span><b>ジャンル選択</b></button>
+    <button class="nav-btn" data-tab="genres"><span>☷</span><b>ジャンル選択</b></button>
     <button class="nav-btn" data-tab="watch"><span>♡</span><b>観たいリスト</b><em id="wishBadge">0</em></button>
     <button class="nav-btn" data-tab="history"><span>▣</span><b>視聴履歴</b></button>
     <button class="nav-btn" data-tab="settings"><span>⚙</span><b>設定</b></button>
@@ -151,14 +143,11 @@
 <div id="modal" class="modal hidden">
   <div class="sheet">
     <h3 id="reviewTitle"></h3>
-    <p class="sheet-label">ランク</p>
+    <div class="sheet-label">ランク</div>
     <div class="ranks"><button>S</button><button>A</button><button>B</button><button>C</button></div>
-    <p class="sheet-label">感想</p>
+    <div class="sheet-label">感想</div>
     <textarea id="memo" placeholder="観終わった直後の気持ちを残す"></textarea>
-    <div class="modal-actions">
-      <button id="cancel">キャンセル</button>
-      <button id="save">保存</button>
-    </div>
+    <div class="modal-actions"><button id="cancel">キャンセル</button><button id="save">保存</button></div>
   </div>
 </div>
 
