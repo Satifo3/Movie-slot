@@ -1,14 +1,40 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09070b"><title>MOVIE Prototype 300</title><link rel="stylesheet" href="style.css"></head><body>
-<div class="app"><header><div><h1>MOVIE</h1><p>300 TITLE PROTOTYPE</p></div><div id="count"></div></header>
-<nav><button data-tab="roulette" class="active">🎰 抽選</button><button data-tab="watch">☆ 観たい</button><button data-tab="history">✓ 記録</button></nav>
-<main>
-<section id="roulette" class="tab active"><div class="panel hero"><div class="eyebrow">TONIGHT'S FEATURE</div><h2>今日の一本を、運命に任せる。</h2>
-<div class="filters"><select id="category"></select><select id="genre"></select><select id="service"></select></div>
-<div class="machine"><div class="reels"><div class="reel" id="r1">🎬<br>MOVIE</div><div class="reel" id="r2">🍿<br>TONIGHT</div><div class="reel" id="r3">🎞️<br>START</div></div><button id="spin">SPIN</button></div>
-<div id="result" class="result hidden"><div class="poster"><div id="icon">🎬</div><h3 id="title"></h3><div id="tags"></div></div><div class="details"><p id="hook"></p><div id="services"></div><div class="actions"><button id="watched">✓ 観た・評価</button><button id="wish">☆ 観たい</button><button id="again">↻ もう一度</button></div></div></div>
-<p class="note">※ 公式配信ページで確認できた作品には「VERIFIED」表示。その他は300タイトルUI・データ構造確認用のプロトタイプ候補です。公開前に配信状況の最終確認が必要です。</p></div></section>
-<section id="watch" class="tab"><div class="panel"><h2>観たいリスト</h2><div id="watchList"></div></div></section>
-<section id="history" class="tab"><div class="panel"><h2>視聴記録</h2><div id="historyList"></div></div></section>
-</main></div>
-<div id="modal" class="modal hidden"><div class="sheet"><h3 id="reviewTitle"></h3><div class="ranks"><button>S</button><button>A</button><button>B</button><button>C</button></div><textarea id="memo" placeholder="感想"></textarea><div class="actions"><button id="cancel">キャンセル</button><button id="save">保存</button></div></div></div>
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08060b"><title>MOVIE v2</title><link rel="stylesheet" href="style.css">
+</head><body>
+<div class="scanlines"></div><div class="app">
+<header class="top"><div><h1>MOVIE</h1><p>PIXEL CINEMA ROULETTE</p></div><div id="stats">300 TITLES</div></header>
+<nav><button class="active" data-tab="roulette">🎰 抽選</button><button data-tab="watch">☆ 観たい</button><button data-tab="history">✓ 記録</button></nav>
+<section id="roulette" class="screen active">
+<div class="theater">
+<div class="marquee"><i></i><i></i><i></i><span>TONIGHT'S MOVIE</span><i></i><i></i><i></i></div>
+<div class="stage">
+<div class="curtain left"></div><div class="curtain right"></div>
+<div class="content">
+<h2>何を観るか、映画館に決めてもらう。</h2>
+<div class="filters"><label>カテゴリ<select id="category"></select></label><label>ジャンル<select id="genre"></select></label><label>配信<select id="service"></select></label></div>
+<div class="slot">
+<div class="bulbs topbulbs"></div>
+<div class="slot-title">◆ MOVIE ROULETTE ◆</div>
+<div class="reel-window">
+<div class="reel" id="r1"><div class="strip">🎬<b>MOVIE</b></div></div>
+<div class="reel" id="r2"><div class="strip">🍿<b>TONIGHT</b></div></div>
+<div class="reel" id="r3"><div class="strip">🎞️<b>START</b></div></div>
+</div>
+<div class="lever"><span></span></div>
+<button id="spin">SPIN!</button><div class="slot-foot">SELECT → SPIN → WATCH</div>
+</div>
+<div id="result" class="result hidden">
+<div class="ticket"><span>ADMIT ONE</span><strong id="title"></strong><small id="categoryTag"></small></div>
+<div class="result-body"><div id="icon" class="bigicon">🎞️</div><div><div id="tags"></div><p id="hook"></p><div id="services"></div></div></div>
+<div class="actions"><button id="watched">✓ 観た・評価</button><button id="wish">☆ 観たい</button><button id="again">↻ もう一度</button></div>
+</div>
+<p class="notice">配信サービス欄は2026-09-06時点で公式ページから確認できた作品だけ表示。未確認作品をNetflix/Hulu/Disney+と断定しない設計に変更済み。</p>
+</div></div></div>
+</section>
+<section id="watch" class="screen"><div class="panel"><h2>☆ 観たいリスト</h2><div id="watchList"></div></div></section>
+<section id="history" class="screen"><div class="panel"><h2>✓ 視聴記録</h2><div id="historyList"></div></div></section>
+</div>
+<div id="modal" class="modal hidden"><div class="sheet"><h3 id="reviewTitle"></h3><div class="ranks"><button>S</button><button>A</button><button>B</button><button>C</button></div><textarea id="memo" placeholder="感想を残す"></textarea><div class="actions"><button id="cancel">キャンセル</button><button id="save">保存</button></div></div></div>
 <script src="app.js"></script></body></html>

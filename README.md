@@ -1,18 +1,15 @@
-# MOVIE Prototype 300
+# MOVIE v2 — GitHub Pages
 
-GitHub Pages向けの映画・アニメ抽選アプリ試作版です。
+## 修正内容
+- 仮タイトルを全廃
+- 実在作品300本
+- 各作品の「ハリウッド映画 / 邦画 / アニメ映画」を固定定義
+- 各作品のジャンルも固定定義
+- カテゴリ AND ジャンル AND 配信サービスで抽選
+- 「聲の形」はアニメ映画 / 青春・感動・ドラマとして登録
+- スロット演出を全面刷新（映画館マーキー、電球、カーテン、縦リール、3段階減速、順番停止、当たり演出）
+- 配信情報は確認済み作品だけサービス名を表示
 
-## 公開方法
-1. GitHubで新規リポジトリを作成
-2. このZIPを解凍
-3. `index.html`, `style.css`, `app.js`, `movies.json` をリポジトリ直下へアップロード
-4. Settings → Pages → Deploy from a branch
-5. Branchを `main` / `/ (root)` にして保存
-
-## データ
-- 300件のレコードを収録
-- `verified: true` は2026-09-06時点で公式配信ページ上で確認できた作品
-- `verified: false` はUI/検索/抽選の負荷テストとデータ構造確認用候補
-- `PROTOTYPE TITLE xxx` は正式タイトル差し替え用スロット
-
-公開版にする前に配信状況を公式サイト/API等で再確認してください。
+## GitHub Pages
+ZIP解凍後の4ファイルをリポジトリ直下へ置き、
+Settings → Pages → Deploy from a branch → main / root で公開してください。
