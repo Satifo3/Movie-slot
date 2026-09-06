@@ -111,18 +111,8 @@ button{cursor:pointer}
 .mini-reel.spinning{animation:casinoPulse .11s steps(2) infinite!important}
 @keyframes casinoPulse{50%{filter:brightness(1.18);transform:translateY(2px)}}
 
-/* v6.4 — the "12" in the reference UI is covered and replaced by live data */
-.home-wish-badge{
-  position:absolute;z-index:25;
-  left:53.2%;top:88.55%;
-  min-width:25px;height:25px;padding:0 6px;
-  display:grid;place-items:center;border-radius:999px;
-  background:#d51f42;color:#fff6dd;border:2px solid #ff6680;
-  font:bold 11px/1 ui-monospace,monospace;
-  box-shadow:0 2px 7px #000a;
-}
-.home-wish-badge.hidden{display:none!important;}
-/* Bigger, denser reel art */
+/* v6.7 — bottom navigation is now a real opaque HTML layer */
+
 .mini-reel canvas{width:100%;height:100%;image-rendering:pixelated}
 
 /* v6.6 reel polish */
@@ -132,4 +122,90 @@ button{cursor:pointer}
 @keyframes reelEnergy{
   0%{filter:brightness(1) contrast(1.02);transform:translateY(0)}
   50%{filter:brightness(1.14) contrast(1.08);transform:translateY(2px)}
+}
+
+/* v6.7 stable bottom navigation
+   This fully covers the JPEG's baked-in nav area, so the old red "12" can never show through. */
+.image-bottom-nav{
+  position:absolute;
+  z-index:40;
+  left:3.8%;
+  top:87.05%;
+  width:92.4%;
+  height:8.6%;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  background:linear-gradient(180deg,#090b13 0%,#06070d 78%,#090a11 100%);
+  border-top:2px solid #232a3b;
+  border-bottom:2px solid #141824;
+  box-shadow:0 -4px 14px #0009,0 5px 12px #0007;
+}
+.image-bottom-nav:before{
+  content:"";
+  position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.015) 0 1px,transparent 1px 4px);
+}
+.app-nav-button{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  min-width:0;
+  padding:2px 1px;
+  border:0;
+  border-right:1px solid #1b2030;
+  background:transparent;
+  color:#8290aa;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.app-nav-button:last-child{border-right:0}
+.app-nav-button span{
+  display:block;
+  font-size:clamp(15px,3.2vw,26px);
+  line-height:1;
+}
+.app-nav-button b{
+  display:block;
+  max-width:100%;
+  font-size:clamp(6px,1.25vw,10px);
+  line-height:1.2;
+  white-space:nowrap;
+}
+.app-nav-button.active{color:#ffe09b}
+.app-nav-button:active{background:#121624;color:#fff0ba}
+.watch-nav em{
+  position:absolute;
+  top:8%;
+  left:58%;
+  min-width:22px;
+  height:22px;
+  padding:0 5px;
+  display:grid;
+  place-items:center;
+  border-radius:99px;
+  background:#d51f42;
+  border:2px solid #ff647d;
+  color:white;
+  font:bold 10px/1 ui-monospace,monospace;
+  box-shadow:0 2px 7px #000b;
+}
+.watch-nav em.hidden{display:none!important}
+
+/* Ensure the SPIN hotspot stays clickable above the image and below temporary reel animation. */
+.spin-hotspot{
+  z-index:45!important;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+/* Sub-page Home buttons get a larger iPhone-friendly tap target. */
+.back-home{min-height:48px;touch-action:manipulation}
+
+@media(max-width:600px){
+  .image-bottom-nav{left:3.6%;width:92.8%;top:87.0%;height:8.7%}
+  .watch-nav em{min-width:18px;height:18px;font-size:8px;top:5%}
 }

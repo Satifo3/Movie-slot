@@ -5,7 +5,6 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let watched=JSON.parse(localStorage.getItem("movie.v6.watched")||"[]");
 let wish=JSON.parse(localStorage.getItem("movie.v6.wish")||"[]");
 
-const reelSymbols=["popcorn","camera","star","seven","ticket","soda","glasses","clapper","chair"];
 
 
 function fill(el,a){el.innerHTML=a.map(x=>`<option value="${x}">${x}</option>`).join("")}
@@ -376,7 +375,12 @@ function saveAll(){localStorage.setItem("movie.v6.watched",JSON.stringify(watche
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function render(){
   $("#wishCount").textContent=wish.length;$("#watchedCount").textContent=watched.length;
-  const hb=$("#homeWishBadge"); if(hb){hb.textContent=wish.length;hb.classList.toggle("hidden",wish.length===0);}
+  const hb=$("#homeWishBadge");
+  if(hb){
+    hb.textContent=String(wish.length);
+    hb.classList.toggle("hidden",wish.length===0);
+    hb.setAttribute("aria-label",`観たいリスト ${wish.length}件`);
+  }
   $("#watchList").innerHTML=wish.length?wish.map((m,i)=>`<div class="card"><b>${esc(m.title)}</b><br><small>${esc(m.category)} / ${m.genres.map(esc).join("・")}</small><div class="card-actions"><button onclick="reviewWish(${i})">✓ 観た</button><button onclick="removeWish(${i})">削除</button></div></div>`).join(""):"<div class='card'>まだありません。</div>";
   $("#historyList").innerHTML=watched.length?watched.map(m=>`<div class="card"><b>${esc(m.title)}</b> <span class="tag">${m.rank}</span><br><small>${esc(m.category)} / ${esc(m.date)}</small>${m.memo?`<p>${esc(m.memo)}</p>`:""}</div>`).join(""):"<div class='card'>まだありません。</div>";
 }
@@ -387,8 +391,20 @@ function openReview(m){if(!m)return;current=m;rank="A";$("#reviewTitle").textCon
 window.reviewWish=i=>openReview(wish[i]);window.removeWish=i=>{wish.splice(i,1);saveAll()};
 $$(".ranks button").forEach(b=>b.onclick=()=>{rank=b.textContent;$$(".ranks button").forEach(x=>x.classList.toggle("active",x===b))});
 $("#cancel").onclick=()=>$("#modal").classList.add("hidden");$("#save").onclick=()=>{watched=watched.filter(x=>x.title!==current.title);watched.unshift({...current,rank,memo:$("#memo").value.trim(),date:new Date().toLocaleDateString("ja-JP")});wish=wish.filter(x=>x.title!==current.title);$("#modal").classList.add("hidden");saveAll()};
-function switchTab(id){$$(".screen").forEach(x=>x.classList.remove("active"));$("#"+id).classList.add("active");window.scrollTo({top:0,behavior:"smooth"})}
-$$(".hotspot[data-tab]").forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+function switchTab(id){
+  const target=$("#"+id);
+  if(!target){console.error("screen not found:",id);return;}
+  $$(".screen").forEach(x=>x.classList.remove("active"));
+  target.classList.add("active");
+  $$(".app-nav-button").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$$(".app-nav-button").forEach(b=>{
+  b.addEventListener("click",e=>{
+    e.preventDefault();
+    switchTab(b.dataset.tab);
+  });
+});
 $("#clearData").onclick=()=>{if(confirm("視聴履歴と観たいリストをすべて削除しますか？")){watched=[];wish=[];saveAll()}};
 
 // v6.1: embedded database startup — no fetch/CORS dependency
@@ -422,3 +438,27 @@ try{
   const saved=JSON.parse(localStorage.getItem("movie.v6.5.posterSources")||"{}");
   movies.forEach(m=>{const v=saved[m.id]||saved[String(m.id)]||saved[m.title]; if(v)m.posterSource=v;});
 }catch(e){}
+
+
+// v6.7 runtime self-test: catches missing IDs before the user hits a dead button.
+function runMovieSelfTest(){
+  const required=[
+    "spin","dynamicResult","mr1","mr2","mr3",
+    "category","genre","service","filterSummary","applyFilters",
+    "watchList","historyList","wishCount","watchedCount",
+    "clearData","modal","cancel","save"
+  ];
+  const missing=required.filter(id=>!document.getElementById(id));
+  const screens=["home","genres","watch","history","settings"].filter(id=>!document.getElementById(id));
+  const result={
+    ok:missing.length===0&&screens.length===0&&Array.isArray(movies)&&movies.length===300,
+    missing,
+    missingScreens:screens,
+    movieCount:Array.isArray(movies)?movies.length:0
+  };
+  if(!result.ok)console.error("MOVIE SELF TEST FAILED",result);
+  else console.info("MOVIE SELF TEST OK",result);
+  return result;
+}
+window.MOVIE_SELF_TEST=runMovieSelfTest;
+requestAnimationFrame(runMovieSelfTest);
