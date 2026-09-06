@@ -1,15 +1,8 @@
-# MOVIE v6.14.1 — STABLE ROLLBACK
+# MOVIE v6.14.2 — Stable Spin Fix
 
-これは v6.14 の安定版へ完全に戻したロールバック版です。
-
-変更したのはキャッシュ回避用のファイル名だけです。
-- style-v6141.css
-- app-v6141.js
-- movie-ui-v6141.jpeg
-
-SPIN / 作品表示 / 下部ナビ / 観たいリスト / 視聴履歴 / 設定は、
-v6.14 のコードをそのまま使用しています。
-
-v6.15〜v6.18で追加した1000作品DBやWikipedia取得などの新規ロジックは、
-今回いったん全撤去しています。
-まず安定動作を取り戻すことを最優先にしています。
+- v6.14.1 UI/DB/navigation retained
+- Replaced heavy per-frame Canvas/SVG reel redraw with CSS translate3d reel strips
+- SPIN flow: spin -> left/center/right stop -> guaranteed win line -> WIN -> movie result
+- Final symbols remain until next SPIN
+- iPhone safety timeout prevents permanent freeze if transitionend is lost
+- Errors recover to a valid winning result instead of freezing
