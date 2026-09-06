@@ -1,15 +1,18 @@
-# MOVIE v3 Pixel Arcade
+# MOVIE v4 — Reference UI rebuild
 
-GitHub Pages向けの300タイトル映画ルーレット。
+画像2の雰囲気を、画像素材を背景として使わず HTML / CSS / JS だけで再構築した版。
 
-## v3変更点
-- スロット筐体をよりゲームセンター的なピクセルUIへ刷新
-- リール内を作品タイトル＋ジャンル記号で高速/中速/低速に切り替える演出
-- 抽選結果に作品ごとの「オリジナル・ドット絵風ポスター」を自動生成
-- ポスターは公式画像を複製せず、ジャンル・タイトル・抽象モチーフからCanvasで生成
-- 既存の300タイトル分類・AND条件フィルタは維持
-- GitHub Pages向け4ファイル構成
+## v4
+- 大型 MOVIE / ROULETTE 看板
+- 赤カーテン、映画館座席、電球マーキー
+- 3段シンボルのスロットリール
+- 映画アイコン中心のゲーム的スピン演出
+- 横長レイアウトの結果カード
+- 作品別Canvasピクセルポスター
+- 3列アクションボタン
+- キャラクター風ミニマスコットをCSSのみで構成
+- 下部5ボタンナビ
+- 300タイトルDBとカテゴリ/ジャンルAND検索は維持
+- GitHub Pages対応
 
-## 公開
-`index.html`, `style.css`, `app.js`, `movies.json` をリポジトリ直下へ置き、
-Settings → Pages → Deploy from a branch → main / root。
+GitHub PagesではZIP内の index.html / style.css / app.js / movies.json をリポジトリ直下へ置いてください。

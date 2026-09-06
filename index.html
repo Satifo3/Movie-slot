@@ -3,99 +3,162 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#08070c">
-<title>MOVIE v3 Pixel Arcade</title>
+<meta name="theme-color" content="#070711">
+<title>MOVIE v4</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="crt"></div>
+<div class="scanlines"></div>
+
 <div class="app">
-  <header class="top">
-    <div class="brand">
-      <div class="brand-icon">◉</div>
-      <div>
-        <h1>MOVIE</h1>
-        <p>PIXEL CINEMA ROULETTE</p>
-      </div>
-    </div>
-    <div id="stats">300 TITLES</div>
-  </header>
+  <main>
+    <section id="home" class="screen active">
+      <div class="theater-shell">
 
-  <nav>
-    <button class="active" data-tab="roulette">⌂ ホーム</button>
-    <button data-tab="watch">☆ 観たい</button>
-    <button data-tab="history">▤ 視聴記録</button>
-  </nav>
+        <div class="side-copy left-copy">ACTION<br>DRAMA<br>SF<br>COMEDY<br>HORROR<br>AND MORE...</div>
+        <div class="side-copy right-copy">GOOD<br>MOVIES<br>GOOD<br>DAYS.</div>
 
-  <section id="roulette" class="screen active">
-    <div class="arcade">
-      <div class="top-sign">
-        <div class="bulb-row"></div>
-        <div class="sign-title">◆ MOVIE ROULETTE ◆</div>
-        <div class="bulb-row"></div>
-      </div>
+        <div class="curtain curtain-l"></div>
+        <div class="curtain curtain-r"></div>
 
-      <div class="filters">
-        <label>カテゴリ<select id="category"></select></label>
-        <label>ジャンル<select id="genre"></select></label>
-        <label>配信<select id="service"></select></label>
-      </div>
+        <header class="movie-sign">
+          <div class="sign-bulbs"></div>
+          <div class="movie-logo"><span>M</span><i class="reel-logo">◉</i><span>VIE</span></div>
+          <div class="roulette-word">◆ ROULETTE ◆</div>
+          <div class="sign-bulbs bottom"></div>
+        </header>
 
-      <div class="slot">
-        <div class="cabinet-dots"></div>
-        <div class="reel-window">
-          <div class="reel" id="r1"><div class="strip"><span class="slot-sprite">🍿</span><b>READY</b></div></div>
-          <div class="reel" id="r2"><div class="strip"><span class="slot-sprite">⭐</span><b>SET</b></div></div>
-          <div class="reel" id="r3"><div class="strip"><span class="slot-sprite">🎬</span><b>MOVIE</b></div></div>
-        </div>
-        <div class="lever"><i></i></div>
-        <button id="spin">SPIN!</button>
-        <div class="cabinet-caption">SELECT → SPIN → WATCH</div>
-      </div>
+        <section id="filterArea" class="filter-panel">
+          <label>カテゴリ<select id="category"></select></label>
+          <label>ジャンル<select id="genre"></select></label>
+          <label>配信<select id="service"></select></label>
+        </section>
 
-      <div class="message">🎞 今日の一本が、きっと見つかる 🎞</div>
+        <div class="cinema-decoration popcorn-left">🍿</div>
+        <div class="cinema-decoration clap-right">🎬</div>
 
-      <div id="result" class="result hidden">
-        <div class="ticket-head">
-          <span>ADMIT ONE</span>
-          <strong id="title"></strong>
-          <small id="categoryTag"></small>
-        </div>
+        <section class="slot-cabinet">
+          <div class="marquee-lamps"></div>
 
-        <div class="result-main">
-          <div id="pixelPoster" class="pixel-poster" aria-label="オリジナル・ピクセルポスター"></div>
-          <div class="result-info">
-            <div id="tags"></div>
-            <p id="hook"></p>
-            <div id="services"></div>
+          <div class="reel-frame">
+            <button class="arrow left-arrow" type="button">▶</button>
+
+            <div class="reel" id="r1">
+              <div class="reel-stack">
+                <div class="symbol">🍿</div>
+                <div class="symbol main">🎥</div>
+                <div class="symbol">🎬</div>
+              </div>
+            </div>
+            <div class="reel" id="r2">
+              <div class="reel-stack">
+                <div class="symbol">⭐</div>
+                <div class="symbol main">7</div>
+                <div class="symbol">🎟️</div>
+              </div>
+            </div>
+            <div class="reel" id="r3">
+              <div class="reel-stack">
+                <div class="symbol">🥤</div>
+                <div class="symbol main">👓</div>
+                <div class="symbol">🎞️</div>
+              </div>
+            </div>
+
+            <button class="arrow right-arrow" type="button">◀</button>
           </div>
-        </div>
 
-        <div class="actions">
-          <button id="watched">✓ 観た・評価</button>
-          <button id="wish">☆ 観たい</button>
-          <button id="again">↻ もう一度</button>
-        </div>
+          <button id="spin" class="spin-btn">SPIN!</button>
+          <div class="cabinet-note">SELECT → SPIN → WATCH</div>
+        </section>
 
-        <div class="flavor" id="flavor">🎬 今夜は映画館モード。</div>
+        <div class="mascot mascot-left"><div class="hair"></div><div class="glasses"><i></i><i></i></div><div class="popcorn-mini">🍿</div></div>
+        <div class="mascot mascot-right cat"><div class="ears"></div><div class="glasses"><i></i><i></i></div><div class="popcorn-mini">🍿</div></div>
+
+        <div class="catchline">🎬 今日の一本が、きっと見つかる 🎬</div>
+
+        <article id="result" class="result-card hidden">
+          <div class="film-holes top-holes"></div>
+
+          <div class="result-grid">
+            <div id="pixelPoster" class="pixel-poster"></div>
+
+            <div class="movie-info">
+              <div class="title-row">
+                <div>
+                  <h2 id="title"></h2>
+                  <div id="yearText" class="year"></div>
+                </div>
+                <span id="categoryTag" class="category-pill"></span>
+              </div>
+
+              <div id="tags" class="tags"></div>
+              <p id="hook" class="synopsis"></p>
+              <div id="services" class="services"></div>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button id="watched" class="btn watched">✓ 観た・評価</button>
+            <button id="wish" class="btn wish">☆ 観たい</button>
+            <button id="again" class="btn again">↻ もう一度</button>
+          </div>
+
+          <div class="quote-box">
+            <div class="mini-avatar"><span>👓</span></div>
+            <div id="flavor" class="speech">映画は、選ぶ時間からもう始まってる。</div>
+            <div class="life-copy">MOVIE<br>LIFE<br>BETTER</div>
+          </div>
+
+          <div class="film-holes bottom-holes"></div>
+        </article>
+
+        <div class="seat-row">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
       </div>
+    </section>
 
-      <p class="notice">
-        ポスター欄は公式画像の複製ではなく、作品タイトル・ジャンルを手掛かりにアプリ内で自動生成するオリジナルのドット絵風ビジュアルです。
-      </p>
-    </div>
-  </section>
+    <section id="watch" class="screen sub-screen">
+      <div class="sub-header"><h2>☆ 観たいリスト</h2><span id="wishCount">0</span></div>
+      <div id="watchList"></div>
+    </section>
 
-  <section id="watch" class="screen"><div class="panel"><h2>☆ 観たいリスト</h2><div id="watchList"></div></div></section>
-  <section id="history" class="screen"><div class="panel"><h2>▤ 視聴記録</h2><div id="historyList"></div></div></section>
+    <section id="history" class="screen sub-screen">
+      <div class="sub-header"><h2>▤ 視聴履歴</h2><span id="watchedCount">0</span></div>
+      <div id="historyList"></div>
+    </section>
+
+    <section id="settings" class="screen sub-screen">
+      <div class="sub-header"><h2>⚙ 設定</h2></div>
+      <div class="settings-card">
+        <p>映画データ：<b>300タイトル</b></p>
+        <p>視聴記録と観たいリストはこの端末のブラウザ内に保存されます。</p>
+        <button id="clearData" class="danger">記録データをすべて削除</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="home"><span>⌂</span><b>ホーム</b></button>
+    <button class="nav-btn" id="genreNav" data-tab="home"><span>☷</span><b>ジャンル選択</b></button>
+    <button class="nav-btn" data-tab="watch"><span>♡</span><b>観たいリスト</b><em id="wishBadge">0</em></button>
+    <button class="nav-btn" data-tab="history"><span>▣</span><b>視聴履歴</b></button>
+    <button class="nav-btn" data-tab="settings"><span>⚙</span><b>設定</b></button>
+  </nav>
 </div>
 
 <div id="modal" class="modal hidden">
   <div class="sheet">
     <h3 id="reviewTitle"></h3>
+    <p class="sheet-label">ランク</p>
     <div class="ranks"><button>S</button><button>A</button><button>B</button><button>C</button></div>
-    <textarea id="memo" placeholder="感想を残す"></textarea>
-    <div class="actions"><button id="cancel">キャンセル</button><button id="save">保存</button></div>
+    <p class="sheet-label">感想</p>
+    <textarea id="memo" placeholder="観終わった直後の気持ちを残す"></textarea>
+    <div class="modal-actions">
+      <button id="cancel">キャンセル</button>
+      <button id="save">保存</button>
+    </div>
   </div>
 </div>
 
