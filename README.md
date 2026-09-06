@@ -1,9 +1,15 @@
-# MOVIE v6.18 — SPIN Restore
+# MOVIE v6.14.1 — STABLE ROLLBACK
 
-- v6.17で消失していたスロットエンジン一式をv6.10系から復元
-- reelSymbols / drawReel / SLOT_WIN_PATTERNS / makeWinningFinals / spin を復旧
-- 7種類の当たりパターンと停止後の絵柄保持を復旧
-- iPhone用SPINタップ領域を拡大
-- touchendでも明示的にSPINを発火
-- Netflix 500 + Disney+ 500 = 1000作品DB維持
-- JS構文チェック済み
+これは v6.14 の安定版へ完全に戻したロールバック版です。
+
+変更したのはキャッシュ回避用のファイル名だけです。
+- style-v6141.css
+- app-v6141.js
+- movie-ui-v6141.jpeg
+
+SPIN / 作品表示 / 下部ナビ / 観たいリスト / 視聴履歴 / 設定は、
+v6.14 のコードをそのまま使用しています。
+
+v6.15〜v6.18で追加した1000作品DBやWikipedia取得などの新規ロジックは、
+今回いったん全撤去しています。
+まず安定動作を取り戻すことを最優先にしています。
