@@ -110,3 +110,22 @@ button{cursor:pointer}
 .mini-reel canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
 .mini-reel.spinning{animation:casinoPulse .11s steps(2) infinite!important}
 @keyframes casinoPulse{50%{filter:brightness(1.18);transform:translateY(2px)}}
+
+/* v6.4 — the "12" in the reference UI is covered and replaced by live data */
+.home-wish-badge{
+  position:absolute;z-index:25;
+  left:53.55%;top:92.0%;
+  min-width:24px;height:24px;padding:0 6px;
+  display:grid;place-items:center;border-radius:999px;
+  background:#d51f42;color:#fff6dd;border:2px solid #ff6680;
+  font:bold 11px/1 ui-monospace,monospace;
+  box-shadow:0 0 0 4px #080910,0 3px 8px #0009;
+}
+.home-wish-badge.hidden{
+  display:block!important;
+  color:transparent;background:#080910;border-color:#080910;
+  box-shadow:0 0 0 5px #080910;
+  min-width:30px;width:30px;height:27px;
+}
+/* Bigger, denser reel art */
+.mini-reel canvas{width:100%;height:100%;image-rendering:pixelated}
