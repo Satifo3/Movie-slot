@@ -250,3 +250,169 @@ button{cursor:pointer}
   25%,70%{opacity:1;transform:translate(-50%,-50%) scale(1)}
   100%{opacity:0;transform:translate(-50%,-50%) scale(1.08)}
 }
+
+/* v6.11 — iPhone full-height bottom navigation */
+html,body{
+  width:100%;
+  min-height:100%;
+  overflow-x:hidden;
+  background:#050611;
+}
+body{
+  min-height:100dvh;
+  overscroll-behavior-x:none;
+}
+.app{
+  width:min(760px,100%);
+  max-width:100%;
+  min-height:100dvh;
+  margin:0 auto;
+  overflow-x:hidden;
+}
+.image-skin{
+  width:100%;
+  min-height:100dvh;
+  aspect-ratio:auto!important;
+  overflow:hidden;
+  background:#050611;
+  padding-bottom:calc(94px + env(safe-area-inset-bottom));
+}
+.ui-image{
+  width:100%;
+  height:auto!important;
+  object-fit:contain;
+}
+
+/* Move navigation out of the baked JPEG area and pin it to the actual iPhone bottom. */
+.image-bottom-nav{
+  position:fixed!important;
+  z-index:90!important;
+  left:50%!important;
+  bottom:0!important;
+  top:auto!important;
+  transform:translateX(-50%);
+  width:min(760px,100%)!important;
+  height:calc(84px + env(safe-area-inset-bottom))!important;
+  padding:0 4px env(safe-area-inset-bottom)!important;
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:0!important;
+  background:
+    linear-gradient(180deg,rgba(10,12,21,.985) 0%,rgba(5,7,13,.995) 100%)!important;
+  border-top:2px solid #2d3448!important;
+  border-bottom:0!important;
+  box-shadow:
+    0 -10px 28px rgba(0,0,0,.65),
+    inset 0 1px 0 rgba(255,255,255,.04)!important;
+}
+
+.app-nav-button{
+  width:100%!important;
+  min-width:0!important;
+  min-height:78px!important;
+  padding:9px 2px 8px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  border:0!important;
+  border-right:1px solid #1b2030!important;
+  background:transparent!important;
+  color:#8d99b2!important;
+  overflow:hidden!important;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.app-nav-button:last-child{border-right:0!important}
+.app-nav-button span{
+  font-size:27px!important;
+  line-height:1!important;
+  flex:0 0 auto;
+}
+.app-nav-button b{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  font-size:10px!important;
+  line-height:1.12!important;
+  text-align:center!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+  letter-spacing:-.02em;
+}
+.app-nav-button.active{
+  color:#ffe29a!important;
+  background:linear-gradient(180deg,rgba(255,213,99,.05),rgba(255,213,99,0))!important;
+}
+.app-nav-button:active{
+  background:#131827!important;
+  transform:translateY(1px);
+}
+
+/* Badge placement on larger iPhone nav */
+.watch-nav em{
+  top:7px!important;
+  left:58%!important;
+  min-width:20px!important;
+  height:20px!important;
+  padding:0 5px!important;
+  font-size:9px!important;
+}
+
+/* Do not allow horizontal scrolling on any sub page either */
+.sub-screen{
+  width:100%;
+  max-width:100%;
+  min-height:100dvh;
+  overflow-x:hidden;
+  padding-bottom:calc(104px + env(safe-area-inset-bottom))!important;
+}
+
+/* iPhone portrait tuning */
+@media(max-width:600px){
+  .image-skin{
+    min-height:100dvh!important;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom))!important;
+  }
+  .image-bottom-nav{
+    height:calc(82px + env(safe-area-inset-bottom))!important;
+  }
+  .app-nav-button{
+    min-height:76px!important;
+    padding:8px 1px 7px!important;
+  }
+  .app-nav-button span{
+    font-size:25px!important;
+  }
+  .app-nav-button b{
+    font-size:9px!important;
+  }
+}
+
+/* Narrow iPhone widths: still 5 items, no sideways scrolling */
+@media(max-width:390px){
+  .image-bottom-nav{
+    padding-left:1px!important;
+    padding-right:1px!important;
+  }
+  .app-nav-button{
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+  .app-nav-button span{
+    font-size:23px!important;
+  }
+  .app-nav-button b{
+    font-size:8px!important;
+    letter-spacing:-.04em;
+  }
+}
+
+/* Safari browser chrome can visually leave space under content;
+   extend app backdrop and seat area through the available viewport. */
+@supports(height:100dvh){
+  body,.app{min-height:100dvh}
+}
