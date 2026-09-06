@@ -639,3 +639,9 @@ img,canvas,video,svg{
 *{
   min-width:0;
 }
+
+/* v6.13 — duplicate baked-in nav removed from JPEG.
+   Keep only the real fixed HTML navigation. */
+.image-bottom-nav{
+  display:grid!important;
+}
