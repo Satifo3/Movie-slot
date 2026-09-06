@@ -27,75 +27,96 @@ function rnd(a){return a[Math.floor(Math.random()*a.length)]}
 /* v6.6 — reference-quality reel renderer.
    Instead of small hand-drawn primitives, the reel symbols are sampled from the
    high-detail pixel artwork in movie-ui-reference.jpeg itself. */
-const REEL_SKIN_SRC="movie-ui-reference.jpeg";
-const reelSkin=new Image();
-reelSkin.src=REEL_SKIN_SRC;
-
-/* Crop rectangles in the 919x1536 reference artwork:
-   each crop isolates one of the polished symbols already used by the visual design. */
-const reelCrops={
-  popcorn:[239,228,82,84],
-  camera:[239,318,91,91],
-  clapper:[238,411,94,86],
-  star:[417,228,88,82],
-  seven:[414,318,91,91],
-  ticket:[407,412,105,84],
-  soda:[594,229,76,84],
-  glasses:[575,318,105,83],
-  chair:[591,410,83,91]
-};
-const reelSymbols=Object.keys(reelCrops);
+const reelSymbols=["popcorn","camera","clapper","star","seven","ticket","soda","glasses","chair"];
+const reelAssets={};
+let reelAssetsReady=false;
+const EMBEDDED_REEL_ASSETS={"camera": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZyBzdHJva2U9IiMxNzEzMWEiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PGNpcmNsZSBjeD0iNDUiIGN5PSIzMCIgcj0iMjEiIGZpbGw9IiMzMDM5NGUiLz48Y2lyY2xlIGN4PSI4MyIgY3k9IjMwIiByPSIyMSIgZmlsbD0iIzMwMzk0ZSIvPjxjaXJjbGUgY3g9IjQ1IiBjeT0iMzAiIHI9IjgiIGZpbGw9IiNhOGIyYzUiLz48Y2lyY2xlIGN4PSI4MyIgY3k9IjMwIiByPSI4IiBmaWxsPSIjYThiMmM1Ii8+PHBhdGggZD0iTTI0IDUxaDcydjUxSDI0eiIgZmlsbD0iIzIyMmI0MCIvPjxwYXRoIGQ9Ik05NiA2MmwyNS0xMnY0OEw5NiA4N3oiIGZpbGw9IiMzNDQxNWQiLz48cmVjdCB4PSI0MCIgeT0iNjgiIHdpZHRoPSIzOCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzY1NzI4YSIvPjwvZz48L3N2Zz4=", "chair": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZyBzdHJva2U9IiMyNTE1MGUiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMzEgMjVoNjd2NDBIMzF6IiBmaWxsPSIjMjgzNDRlIi8+PHBhdGggZD0iTTI0IDY4aDgxIiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTM2IDY4bC0xOCA0NW03NS00NWwxOCA0NU0zNiA4NGw1OCAyOU05MyA4NGwtNTcgMjkiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMjIgNTF2MzRtODQtMzR2MzQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2I4NzQzMiIvPjwvZz48L3N2Zz4=", "clapper": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZyBzdHJva2U9IiMxNzEzMWEiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIwIDUxaDkxdjYwSDIweiIgZmlsbD0iIzI0MmIzZSIvPjxwYXRoIGQ9Ik0xNCAyOWw4OS0xOSA3IDI4LTg5IDE5eiIgZmlsbD0iI2YzZWFkMCIvPjxwYXRoIGQ9Ik0yOCAyNmwxNC0zLTEwIDI1LTE0IDN6bTMwLTZsMTQtMy0xMCAyNS0xNCAzem0zMC03bDE0LTMtMTAgMjUtMTQgM3oiIGZpbGw9IiMyNDJiM2UiLz48L2c+PHBhdGggZD0iTTM5IDczaDU0TTM5IDg4aDQyIiBzdHJva2U9IiNmZmYwYzkiIHN0cm9rZS13aWR0aD0iNiIvPjwvc3ZnPg==", "glasses": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZyBzdHJva2U9IiMxYTEyMTAiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTEyIDQ1aDQzbDcgMzlIMjV6IiBmaWxsPSIjM2Q5ZWU4Ii8+PHBhdGggZD0iTTczIDQ1aDQzbC0xMyAzOUg2NnoiIGZpbGw9IiNlZjM4NTQiLz48cGF0aCBkPSJNNTUgNTNoMTkiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJNMTIgNDVMNSAzN20xMTEgOGw3LTgiIGZpbGw9Im5vbmUiLz48L2c+PHBhdGggZD0iTTI2IDU1aDE4IiBzdHJva2U9IiNjOWVmZmYiIHN0cm9rZS13aWR0aD0iNSIvPjxwYXRoIGQ9Ik04NCA1NWgxOCIgc3Ryb2tlPSIjZmZkMWQ4IiBzdHJva2Utd2lkdGg9IjUiLz48L3N2Zz4=", "popcorn": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48ZyBzdHJva2U9IiMyNDEzMGQiIHN0cm9rZS13aWR0aD0iNiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZmlsbD0iI2ZmZjBiMCIgZD0iTTI3IDQ3aDc0bC05IDY4SDM2eiIvPjxwYXRoIGZpbGw9IiNkOTFmMzgiIGQ9Ik0zNyA1MGgxM2wzIDYySDQwem0yOCAwaDEzbC0zIDYySDYyem0yNyAwaDlsLTkgNjVIODN6Ii8+PGcgZmlsbD0iI2ZmZDQ1YSI+PGNpcmNsZSBjeD0iMzUiIGN5PSIzOSIgcj0iMTUiLz48Y2lyY2xlIGN4PSI1NSIgY3k9IjMwIiByPSIxNyIvPjxjaXJjbGUgY3g9Ijc1IiBjeT0iMzIiIHI9IjE3Ii8+PGNpcmNsZSBjeD0iOTQiIGN5PSI0MCIgcj0iMTUiLz48Y2lyY2xlIGN4PSI2NCIgY3k9IjQ0IiByPSIxOCIvPjwvZz48cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiNmZmY2YzciIHN0cm9rZS13aWR0aD0iNSIgZD0iTTQzIDMxbDctNW0xOSAwbDcgNW0xMiA1bDYgNCIvPjwvZz48L3N2Zz4=", "seven": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cGF0aCBkPSJNMjIgMjRoODd2MjNMNjggMTEySDM5bDM4LTYxSDIyeiIgZmlsbD0iI2U5MjE0MiIgc3Ryb2tlPSIjMjEwZDEyIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMzEgMzNoNjZMODggNDNIMzF6IiBmaWxsPSIjZmY3NTg2Ii8+PHBhdGggZD0iTTY3IDU1bC0yNCA0NSIgc3Ryb2tlPSIjZmZiNTNlIiBzdHJva2Utd2lkdGg9IjciLz48L3N2Zz4=", "soda": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cGF0aCBkPSJNMzggMzNoNTZsLTcgNzlINDZ6IiBmaWxsPSIjZTMyNjQzIiBzdHJva2U9IiMyNTExMGUiIHN0cm9rZS13aWR0aD0iNyIvPjxwYXRoIGQ9Ik00MyA0MGgxMmw0IDY0SDUweiIgZmlsbD0iI2ZmNzI4MiIvPjxwYXRoIGQ9Ik0zNCAyN2g2NXYxNEgzNHoiIGZpbGw9IiNmZmYwYjgiIHN0cm9rZT0iIzI1MTEwZSIgc3Ryb2tlLXdpZHRoPSI2Ii8+PHBhdGggZD0iTTc4IDI4bDEwLTIyaDE3IiBmaWxsPSJub25lIiBzdHJva2U9IiNlMzI2NDMiIHN0cm9rZS13aWR0aD0iNyIvPjwvc3ZnPg==", "star": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cGF0aCBkPSJNNjQgOWwxNSAzNCAzNyA0LTI4IDI1IDggMzctMzItMTktMzIgMTkgOC0zNy0yOC0yNSAzNy00eiIgZmlsbD0iI2ZmYzgzZCIgc3Ryb2tlPSIjMjUxMzBkIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNNjQgMjBsMTAgMjggMjkgMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmMGEzIiBzdHJva2Utd2lkdGg9IjYiLz48L3N2Zz4=", "ticket": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4Ij48cGF0aCBkPSJNMTcgNDNsNzctMjQgMTcgMThjLTggNi01IDE4IDUgMTlsLTcgMjMtNzcgMjUtMTctMThjOS03IDUtMTktNS0yMHoiIGZpbGw9IiNlOGEzM2QiIHN0cm9rZT0iIzJhMTYwZCIgc3Ryb2tlLXdpZHRoPSI2Ii8+PHBhdGggZD0iTTM2IDQ5bDU1LTE3IDE0IDQyLTU1IDE3eiIgZmlsbD0iI2Y4YzM1ZSIgc3Ryb2tlPSIjOGE0ZDFiIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI3MCIgeT0iNjciIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UiIGZvbnQtd2VpZ2h0PSI5MDAiIHRyYW5zZm9ybT0icm90YXRlKC0xNyA3MCA2NykiPlRJQ0tFVDwvdGV4dD48L3N2Zz4="};
+function preloadReelAssets(){
+  return Promise.all(reelSymbols.map(name=>new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{reelAssets[name]=img;resolve();};
+    img.onerror=()=>resolve();
+    img.src=EMBEDDED_REEL_ASSETS[name]||"";
+  }))).then(()=>{reelAssetsReady=true;});
+}
+const reelAssetsPromise=preloadReelAssets();
 
 function reelCanvas(el){
   let c=el.querySelector("canvas");
-  if(!c){
-    c=document.createElement("canvas");
-    c.width=240;c.height=540;
-    el.innerHTML="";el.appendChild(c);
-  }
+  if(!c){c=document.createElement("canvas");c.width=240;c.height=540;el.innerHTML="";el.appendChild(c);}
   return c;
 }
-function drawReferenceSymbol(g,type,cx,cy,target=132){
-  const cr=reelCrops[type]||reelCrops.star;
-  const [sx,sy,sw,sh]=cr;
-  const scale=Math.min(target/sw,target/sh);
-  const dw=Math.round(sw*scale),dh=Math.round(sh*scale);
+function drawAssetSymbol(g,type,cx,cy,target=128){
+  const img=reelAssets[type];
+  if(!img)return;
+  g.save();
   g.imageSmoothingEnabled=false;
-
-  // dark pixel outline / drop shadow gives the casino-symbol weight seen in the reference
-  g.globalAlpha=.34;
-  g.drawImage(reelSkin,sx,sy,sw,sh,Math.round(cx-dw/2+6),Math.round(cy-dh/2+7),dw,dh);
-  g.globalAlpha=1;
-  g.drawImage(reelSkin,sx,sy,sw,sh,Math.round(cx-dw/2),Math.round(cy-dh/2),dw,dh);
+  const sc=Math.min(target/img.naturalWidth,target/img.naturalHeight);
+  const w=target,h=target;
+  g.drawImage(img,cx-w/2,cy-h/2,w,h);
+  g.restore();
 }
 function drawReel(el,symbols){
-  const c=reelCanvas(el),g=c.getContext("2d");
-  const W=c.width,H=c.height;
-  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
-
+  const c=reelCanvas(el),g=c.getContext("2d"),W=c.width,H=c.height;
+  g.clearRect(0,0,W,H);
   const grad=g.createLinearGradient(0,0,W,0);
-  grad.addColorStop(0,"#8d6a35");grad.addColorStop(.08,"#d6b875");
-  grad.addColorStop(.22,"#f8e5b0");grad.addColorStop(.5,"#fff3c9");
-  grad.addColorStop(.78,"#efd59b");grad.addColorStop(.93,"#bd9554");grad.addColorStop(1,"#765026");
+  grad.addColorStop(0,"#9a743c");grad.addColorStop(.08,"#e4c783");grad.addColorStop(.25,"#fff0bf");
+  grad.addColorStop(.5,"#fff8d8");grad.addColorStop(.75,"#f1d79b");grad.addColorStop(.93,"#c39a58");grad.addColorStop(1,"#795126");
   g.fillStyle=grad;g.fillRect(0,0,W,H);
-
-  // subtle vertical reel shading and separators
-  g.fillStyle="rgba(255,255,255,.28)";g.fillRect(18,8,9,H-16);
-  g.fillStyle="rgba(73,40,17,.18)";g.fillRect(W-26,8,11,H-16);
-  g.fillStyle="#6d4824";g.fillRect(0,178,W,5);g.fillRect(0,357,W,5);
-  g.fillStyle="#d7b56f";g.fillRect(0,183,W,2);g.fillRect(0,362,W,2);
-
-  const centers=[90,270,450];
-  symbols.forEach((sym,i)=>drawReferenceSymbol(g,sym,W/2,centers[i],138));
-
-  // center-line glow to make the winning row feel more like a real slot
-  const glow=g.createLinearGradient(0,205,0,335);
-  glow.addColorStop(0,"rgba(255,214,91,0)");
-  glow.addColorStop(.5,"rgba(255,224,133,.12)");
-  glow.addColorStop(1,"rgba(255,214,91,0)");
-  g.fillStyle=glow;g.fillRect(0,205,W,130);
+  g.fillStyle="rgba(255,255,255,.35)";g.fillRect(15,5,8,H-10);
+  g.fillStyle="rgba(50,25,8,.18)";g.fillRect(W-24,5,9,H-10);
+  g.fillStyle="#76502c";g.fillRect(0,178,W,4);g.fillRect(0,358,W,4);
+  g.fillStyle="#e2c27d";g.fillRect(0,182,W,2);g.fillRect(0,362,W,2);
+  [90,270,450].forEach((cy,i)=>drawAssetSymbol(g,symbols[i],W/2,cy,132));
 }
 function randomStack(){return [rnd(reelSymbols),rnd(reelSymbols),rnd(reelSymbols)]}
+
+
+/* v6.10 — real slot winning patterns.
+   Each reel array is [top, middle, bottom]. */
+const SLOT_WIN_PATTERNS=[
+  {name:"CENTER", rows:[1,1,1]},
+  {name:"TOP", rows:[0,0,0]},
+  {name:"BOTTOM", rows:[2,2,2]},
+  {name:"DIAGONAL_DOWN", rows:[0,1,2]},
+  {name:"DIAGONAL_UP", rows:[2,1,0]},
+  {name:"V_SHAPE", rows:[0,2,0]},
+  {name:"INVERTED_V", rows:[2,0,2]}
+];
+
+function makeWinningFinals(){
+  const pattern=rnd(SLOT_WIN_PATTERNS);
+  const winningSymbol=rnd(reelSymbols);
+  const finals=[randomStack(),randomStack(),randomStack()];
+
+  // Put the same winning symbol on the selected payline.
+  pattern.rows.forEach((row,reelIndex)=>{
+    finals[reelIndex][row]=winningSymbol;
+  });
+
+  // Avoid fillers accidentally becoming another obvious 3-of-a-kind.
+  for(let row=0;row<3;row++){
+    if(pattern.rows[0]===row && pattern.rows[1]===row && pattern.rows[2]===row) continue;
+    const seen=new Set();
+    for(let reel=0;reel<3;reel++){
+      if(pattern.rows[reel]===row) continue;
+      let sym=finals[reel][row], guard=0;
+      while(seen.has(sym) && guard++<20) sym=rnd(reelSymbols);
+      finals[reel][row]=sym;
+      seen.add(sym);
+    }
+  }
+
+  return {pattern,winningSymbol,finals};
+}
+
+function playWinEffect(){
+  const overlay=$("#spinOverlay");
+  overlay.classList.remove("win-glow");
+  void overlay.offsetWidth;
+  overlay.classList.add("win-glow");
+  setTimeout(()=>overlay.classList.remove("win-glow"),2600);
+}
 
 function spin(){
   const pool=filtered();
@@ -103,40 +124,63 @@ function spin(){
     alert("この条件に合う作品がありません。ジャンル選択で条件を広げてください。");
     return;
   }
-  $("#dynamicResult").classList.add("hidden");
-  $("#spinOverlay").classList.remove("hidden");
+
+  const overlay=$("#spinOverlay");
   const reels=[$("#mr1"),$("#mr2"),$("#mr3")];
 
+  // Keep the reel layer visible permanently after the first spin.
+  overlay.classList.remove("hidden","win-glow");
+  $("#dynamicResult").classList.add("hidden");
+
   const begin=()=>{
-    reels.forEach(r=>{r.classList.add("spinning");drawReel(r,randomStack())});
+    reels.forEach(r=>{
+      r.classList.add("spinning");
+      drawReel(r,randomStack());
+    });
+
     let tick=0;
     const timer=setInterval(()=>{
       reels.forEach((r,i)=>{
-        const stopAt=26+i*7;
+        const stopAt=27+i*7;
         if(tick<stopAt) drawReel(r,randomStack());
       });
       tick++;
-      if(tick>43){
+
+      if(tick>44){
         clearInterval(timer);
         current=rnd(pool);
-        const finals=[
-          ["popcorn","camera","clapper"],
-          ["star","seven","ticket"],
-          ["soda","glasses","chair"]
-        ];
+
+        const win=makeWinningFinals();
+
+        // Stop left -> center -> right and KEEP the final symbols on screen.
         reels.forEach((r,i)=>setTimeout(()=>{
           r.classList.remove("spinning");
-          drawReel(r,finals[i]);
-          if(i===2)setTimeout(()=>{
-            $("#spinOverlay").classList.add("hidden");
-            show(current);
-          },500);
+          drawReel(r,win.finals[i]);
+
+          r.animate(
+            [
+              {transform:"translateY(-8px)",filter:"brightness(1.45)"},
+              {transform:"translateY(3px)",filter:"brightness(1.12)"},
+              {transform:"translateY(0)",filter:"brightness(1)"}
+            ],
+            {duration:240,easing:"steps(5,end)"}
+          );
+
+          if(i===2){
+            setTimeout(()=>{
+              playWinEffect();
+              show(current);
+              // IMPORTANT: do not hide spinOverlay here.
+              // The winning reel result remains visible until the next SPIN.
+            },260);
+          }
         },i*300));
       }
     },62);
   };
-  if(reelSkin.complete && reelSkin.naturalWidth) begin();
-  else reelSkin.addEventListener("load",begin,{once:true});
+
+  if(reelAssetsReady) begin();
+  else reelAssetsPromise.then(begin);
 }
 
 function show(m){
@@ -423,8 +467,7 @@ requestAnimationFrame(()=>{
       drawReel(c,["soda","glasses","chair"]);
     }
   };
-  if(reelSkin.complete&&reelSkin.naturalWidth) paint();
-  else reelSkin.addEventListener("load",paint,{once:true});
+  if(reelAssetsReady) paint(); else reelAssetsPromise.then(paint);
 });
 
 // v6.5 poster-source map importer.

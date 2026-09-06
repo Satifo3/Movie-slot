@@ -209,3 +209,44 @@ button{cursor:pointer}
   .image-bottom-nav{left:3.6%;width:92.8%;top:87.0%;height:8.7%}
   .watch-nav em{min-width:18px;height:18px;font-size:8px;top:5%}
 }
+
+/* v6.8 standalone transparent reel assets */
+.mini-reel canvas{display:block;width:100%;height:100%;background:transparent;image-rendering:pixelated}
+
+
+/* v6.10 — slot game result states */
+.spin-overlay.win-glow .mini-reel{
+  animation:winPulse .72s steps(2,end) 4!important;
+  box-shadow:
+    inset 0 0 26px rgba(255,215,92,.48),
+    0 0 18px rgba(255,194,57,.80),
+    0 0 34px rgba(255,84,65,.35)!important;
+}
+.spin-overlay.win-glow:after{
+  content:"WIN!";
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:8;
+  transform:translate(-50%,-50%) scale(.92);
+  padding:.22em .58em;
+  border:3px solid #ffd85e;
+  border-radius:8px;
+  background:linear-gradient(#e82e47,#a8122c);
+  color:#fff1c6;
+  font:900 clamp(16px,3.3vw,31px)/1 Impact,Haettenschweiler,"Arial Black",sans-serif;
+  letter-spacing:.08em;
+  text-shadow:2px 2px 0 #5b0715;
+  box-shadow:0 0 0 3px #531015,0 0 24px #ffca43;
+  pointer-events:none;
+  animation:winLabel .72s steps(3,end) 3 forwards;
+}
+@keyframes winPulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.35) saturate(1.22)}
+}
+@keyframes winLabel{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}
+  25%,70%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(1.08)}
+}
